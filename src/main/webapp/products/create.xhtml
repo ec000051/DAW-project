@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/templates/main.xhtml">
+
+    <ui:define name="title">Create Product</ui:define>
+
+    <ui:define name="content">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6">Create Product</h1>
+
+            <div class="bg-white rounded-xl shadow p-6">
+                <h:form styleClass="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                        <h:inputText value="#{productBean.product.name}"
+                                     required="true"
+                                     requiredMessage="Name is required"
+                                     styleClass="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <h:message for="@previous" styleClass="text-red-500 text-sm" />
+                    </div>
+
+                    <div>
+                        <label for="price" class="block text-sm font-semibold text-slate-700 mb-2">Price</label>
+                        <h:inputText id="price"
+                                     value="#{productBean.product.price}"
+                                     required="true"
+                                     requiredMessage="Price is required."
+                                     converterMessage="Price must be a valid number."
+                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900">
+                            <f:validateDoubleRange minimum="0.01" minimumMessage="Price must be greater than 0." />
+                        </h:inputText>
+                        <h:message for="price" styleClass="text-red-500 text-sm mt-2 block" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                        <h:inputTextarea value="#{productBean.product.description}"
+                                         rows="4"
+                                         cols="30"
+                                         styleClass="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+
+                    <div class="flex gap-3">
+                        <h:commandButton value="Save"
+                                         action="#{productBean.create}"
+                                         styleClass="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer transition" />
+
+                        <h:link value="Back to List"
+                                outcome="/products/list.xhtml"
+                                styleClass="inline-block bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition" />
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+
+</ui:composition>

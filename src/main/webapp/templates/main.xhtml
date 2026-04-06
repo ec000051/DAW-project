@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets">
+
+<h:head>
+    <title>
+        <ui:insert name="title">DAW Marketplace</ui:insert>
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</h:head>
+
+<h:body styleClass="bg-slate-50 min-h-screen text-slate-800">
+    <header class="bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div>
+                <a href="#{request.contextPath}/index.xhtml"
+                   class="text-2xl font-extrabold text-slate-900 tracking-tight">
+                    DAW Market
+                </a>
+                <p class="text-sm text-slate-500">Buy, sell and manage products easily</p>
+            </div>
+
+            <nav class="flex items-center gap-3">
+                <a href="#{request.contextPath}/index.xhtml"
+                   class="px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+                    Home
+                </a>
+                <a href="#{request.contextPath}/products/list.xhtml"
+                   class="px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+                    Products
+                </a>
+                <a href="#{request.contextPath}/products/create.xhtml"
+                   class="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition">
+                    Sell Product
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10">
+        <ui:insert name="content" />
+    </main>
+</h:body>
+</html>

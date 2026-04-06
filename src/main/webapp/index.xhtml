@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                template="/templates/main.xhtml">
+
+    <ui:define name="title">Home</ui:define>
+
+    <ui:define name="content">
+        <section class="grid md:grid-cols-2 gap-10 items-center">
+            <div>
+                <span class="inline-block bg-slate-900 text-white text-sm px-3 py-1 rounded-full mb-4">
+                    Student Marketplace Demo
+                </span>
+
+                <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 leading-tight mb-6">
+                    A simple marketplace built with Jakarta Faces and Tailwind CSS
+                </h1>
+
+                <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                    Explore products, create listings, edit information and manage your marketplace through a clean and modern interface.
+                </p>
+
+                <div class="flex flex-wrap gap-4">
+                    <a href="#{request.contextPath}/products/list.xhtml"
+                       class="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition">
+                        Browse Products
+                    </a>
+
+                    <a href="#{request.contextPath}/products/create.xhtml"
+                       class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition">
+                        Add Product
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-lg border border-slate-200 p-8">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-100 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-2">Fast management</p>
+                        <h3 class="text-xl font-bold">CRUD ready</h3>
+                    </div>
+
+                    <div class="bg-slate-100 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-2">Design</p>
+                        <h3 class="text-xl font-bold">Tailwind UI</h3>
+                    </div>
+
+                    <div class="bg-slate-100 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-2">Architecture</p>
+                        <h3 class="text-xl font-bold">MVC + DAO</h3>
+                    </div>
+
+                    <div class="bg-slate-100 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-2">Storage</p>
+                        <h3 class="text-xl font-bold">In-memory</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </ui:define>
+
+</ui:composition>
