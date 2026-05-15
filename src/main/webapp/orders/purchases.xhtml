@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{authBean.requireUser}" />
+    </f:metadata>
+
+    <ui:define name="title">My Purchases</ui:define>
+
+
+
+    <ui:define name="content">
+        <div class="flex items-center gap-3 mb-8">
+
+            <button type="button"
+                    onclick="history.back()"
+                    class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
+                ← Back
+            </button>
+
+        </div>
+        <section class="mb-8">
+            <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">Orders</p>
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-3">My Purchases</h1>
+            <p class="text-slate-600">Products you have bought or requested to buy.</p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+
+            <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">Purchase Requests</h2>
+                    <p class="text-sm text-slate-500">Track your current and past purchase requests.</p>
+                </div>
+            </div>
+
+            <h:dataTable value="#{orderBean.myPurchases}"
+                         var="order"
+                         styleClass="w-full text-left border-collapse"
+                         headerClass="bg-slate-100 text-slate-700 text-sm uppercase tracking-wide"
+                         rowClasses="border-b border-slate-100 hover:bg-slate-50 transition">
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Order ID</span>
+                    </f:facet>
+                    <span class="block px-6 py-4 text-slate-700 font-medium">
+                        ##{order.id}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Product</span>
+                    </f:facet>
+                    <div class="px-6 py-4">
+                        <p class="font-bold text-slate-900">#{order.product.name}</p>
+                        <p class="text-sm text-slate-500">Marketplace item</p>
+                    </div>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Price</span>
+                    </f:facet>
+                    <span class="block px-6 py-4 font-bold text-slate-900">
+                        €#{order.product.price}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Seller</span>
+                    </f:facet>
+                    <span class="block px-6 py-4 text-slate-700">
+                        #{order.seller.username}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Status</span>
+                    </f:facet>
+                    <span class="inline-block mx-6 my-4 px-3 py-1 rounded-full text-sm font-semibold
+                        #{order.status eq 'APPROVED' ? 'bg-green-100 text-green-700' : ''}
+                        #{order.status eq 'REJECTED' ? 'bg-red-100 text-red-700' : ''}
+                        #{order.status eq 'PENDING' ? 'bg-yellow-100 text-yellow-800' : ''}">
+                        #{order.status}
+                    </span>
+                </h:column>
+
+            </h:dataTable>
+        </section>
+    </ui:define>
+
+</ui:composition>

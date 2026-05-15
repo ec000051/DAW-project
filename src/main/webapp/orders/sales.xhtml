@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:jsf="jakarta.faces"
+                template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{authBean.requireUser}" />
+    </f:metadata>
+
+    <ui:define name="title">Orders Received</ui:define>
+
+
+
+    <ui:define name="content">
+        <div class="flex items-center gap-3 mb-8">
+
+            <button type="button"
+                    onclick="history.back()"
+                    class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
+                ← Back
+            </button>
+
+        </div>
+        <section class="mb-8">
+            <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">Seller Panel</p>
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-3">Orders Received</h1>
+            <p class="text-slate-600">Purchase requests made by other users for products you are selling.</p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+
+            <div class="px-6 py-5 border-b border-slate-200">
+                <h2 class="text-xl font-bold text-slate-900">Sales Requests</h2>
+                <p class="text-sm text-slate-500">Review orders connected to your listed products.</p>
+            </div>
+
+            <h:dataTable value="#{orderBean.mySales}"
+                         var="order"
+                         styleClass="w-full text-left border-collapse"
+                         headerClass="bg-slate-100 text-slate-700 text-sm uppercase tracking-wide"
+                         rowClasses="border-b border-slate-100 hover:bg-slate-50 transition">
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Order ID</span>
+                    </f:facet>
+                    <span class="block px-6 py-4 text-slate-700 font-medium">
+                        ##{order.id}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Product</span>
+                    </f:facet>
+                    <div class="px-6 py-4">
+                        <p class="font-bold text-slate-900">#{order.productName}</p>
+                        <p class="text-sm text-slate-500">Marketplace item</p>
+                    </div>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Buyer</span>
+                    </f:facet>
+                    <span class="block px-6 py-4 text-slate-700">
+                        #{order.buyer.username}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Note</span>
+                    </f:facet>
+                    <span class="block px-6 py-4 text-slate-700">
+                        #{order.contactMessage}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Price</span>
+                    </f:facet>
+                    <span class="block px-6 py-4 font-bold text-slate-900">
+                        €#{order.price}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Status</span>
+                    </f:facet>
+                    <span class="inline-block mx-6 my-4 px-3 py-1 rounded-full text-sm font-semibold
+                        #{order.status eq 'APPROVED' ? 'bg-green-100 text-green-700' : ''}
+                        #{order.status eq 'REJECTED' ? 'bg-red-100 text-red-700' : ''}
+                        #{order.status eq 'PENDING' ? 'bg-yellow-100 text-yellow-800' : ''}">
+                        #{order.status}
+                    </span>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <span class="block px-6 py-4">Actions</span>
+                    </f:facet>
+
+                    <div class="px-6 py-4 flex gap-2">
+                        <h:form rendered="#{order.status eq 'PENDING'}">
+                            <h:commandButton value="Accept"
+                                             action="#{orderBean.acceptOrder(order.id)}"
+                                             styleClass="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition" />
+                        </h:form>
+
+                        <h:form rendered="#{order.status eq 'PENDING'}">
+                            <h:commandButton value="Reject"
+                                             action="#{orderBean.rejectOrder(order.id)}"
+                                             styleClass="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition" />
+                        </h:form>
+
+                        <span class="text-slate-500" jsf:rendered="#{order.status ne 'PENDING'}">
+                            No actions
+                        </span>
+                    </div>
+                </h:column>
+
+            </h:dataTable>
+        </section>
+    </ui:define>
+
+</ui:composition>

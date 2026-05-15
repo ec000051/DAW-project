@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{authBean.requireAdmin}" />
+    </f:metadata>
+
+    <ui:define name="title">Edit Admin Account</ui:define>
+
+
+
+    <ui:define name="content">
+
+        <div class="flex items-center gap-3 mb-8">
+
+            <button type="button"
+                    onclick="history.back()"
+                    class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
+                ← Back
+            </button>
+
+        </div>
+
+        <section class="max-w-2xl mx-auto">
+
+            <div class="mb-8">
+                <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">
+                    Administration
+                </p>
+
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-3">
+                    Edit Admin Account
+                </h1>
+
+                <p class="text-slate-600">
+                    Update your administrator account information.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
+
+                <h:form styleClass="space-y-5">
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Username
+                        </label>
+
+                        <h:inputText value="#{authBean.currentUser.username}"
+                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Email
+                        </label>
+
+                        <h:inputText value="#{authBean.currentUser.email}"
+                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Password
+                        </label>
+
+                        <h:inputSecret value="#{authBean.currentUser.password}"
+                                       redisplay="true"
+                                       styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+
+                        <h:commandButton value="Save Changes"
+                                         action="#{authBean.updateAdminAccount}"
+                                         styleClass="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition font-semibold" />
+
+                        <a href="#{request.contextPath}/admin/account.xhtml"
+                           class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </h:form>
+
+            </div>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>

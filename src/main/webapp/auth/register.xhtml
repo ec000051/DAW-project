@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:pt="jakarta.faces.passthrough"
+                template="/templates/main.xhtml">
+
+    <ui:define name="title">Sign Up</ui:define>
+
+    <ui:define name="content">
+        <section class="flex items-center justify-center min-h-[70vh]">
+            <div class="bg-white border border-slate-200 rounded-3xl shadow-sm w-full max-w-lg p-8">
+
+                <div class="mb-6 text-center">
+                    <h1 class="text-3xl font-extrabold text-slate-900 mb-2">
+                        Create your account
+                    </h1>
+                    <p class="text-slate-500">
+                        Join DAW Market to buy and sell products.
+                    </p>
+                </div>
+
+                <h:form>
+
+                    <h:messages globalOnly="true"
+                                styleClass="text-red-500 text-sm mb-4 block" />
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Username
+                        </label>
+
+                        <h:inputText id="username"
+                                     value="#{authBean.username}"
+                                     required="true"
+                                     requiredMessage="Username is required."
+                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                     pt:placeholder="Choose a username">
+                            <f:validateLength minimum="3"
+                                              maximum="30" />
+
+                            <h:message for="username"
+                                       styleClass="text-red-500 text-sm mt-2 block"
+                                       showSummary="false"
+                                       showDetail="true" />
+                        </h:inputText>
+
+                        <h:message for="username"
+                                   styleClass="text-red-500 text-sm mt-2 block" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Email
+                        </label>
+
+                        <h:inputText id="email"
+                                     value="#{authBean.email}"
+                                     required="true"
+                                     requiredMessage="Email is required."
+                                     validatorMessage="Please enter a valid email address."
+                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                     pt:placeholder="Enter your email">
+
+                            <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$" />
+
+                        </h:inputText>
+
+                        <h:message for="email"
+                                   styleClass="text-red-500 text-sm mt-2 block" />
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Password
+                        </label>
+
+                        <h:inputSecret id="password"
+                                       value="#{authBean.password}"
+                                       required="true"
+                                       requiredMessage="Password is required."
+                                       validatorMessage="Password must be at least 6 characters."
+                                       styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                       pt:placeholder="Create password">
+
+                            <f:validateLength minimum="6" />
+
+                        </h:inputSecret>
+
+                        <h:message for="password"
+                                   styleClass="text-red-500 text-sm mt-2 block" />
+                    </div>
+
+                    <h:commandButton value="Create Account"
+                                     action="#{authBean.register}"
+                                     styleClass="w-full bg-slate-900 text-white py-3 rounded-xl hover:bg-slate-800 transition font-semibold" />
+
+                </h:form>
+
+                <div class="mt-6 text-center text-sm text-slate-500">
+                    Already have an account?
+                    <a href="#{request.contextPath}/auth/login.xhtml"
+                       class="text-slate-900 font-semibold hover:underline">
+                        Login
+                    </a>
+                </div>
+
+            </div>
+        </section>
+    </ui:define>
+
+</ui:composition>

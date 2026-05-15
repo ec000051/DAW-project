@@ -1,0 +1,189 @@
+<ui:composition template="/templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core">
+
+    <f:metadata>
+        <f:viewAction action="#{authBean.requireAdmin}" />
+    </f:metadata>
+
+    <ui:define name="title">Admin Dashboard</ui:define>
+
+    <ui:define name="content">
+
+        <section class="max-w-7xl mx-auto">
+
+            <div class="mb-8">
+                <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">
+                    Administration
+                </p>
+
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-3">
+                    Admin Dashboard
+                </h1>
+
+                <p class="text-slate-600">
+                    Welcome, #{authBean.currentUser.username}. Monitor users, products, and orders from one place.
+                </p>
+            </div>
+
+            <!-- Statistic cards -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
+                    <p class="text-sm text-slate-500 font-semibold uppercase tracking-widest">Users</p>
+                    <h2 class="text-5xl font-extrabold text-slate-900 mt-3">
+                        #{adminDashboardBean.totalUsers}
+                    </h2>
+                    <p class="text-slate-500 mt-2">Registered accounts</p>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
+                    <p class="text-sm text-slate-500 font-semibold uppercase tracking-widest">Products</p>
+                    <h2 class="text-5xl font-extrabold text-slate-900 mt-3">
+                        #{adminDashboardBean.totalProducts}
+                    </h2>
+                    <p class="text-slate-500 mt-2">Marketplace listings</p>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
+                    <p class="text-sm text-slate-500 font-semibold uppercase tracking-widest">Orders</p>
+                    <h2 class="text-5xl font-extrabold text-slate-900 mt-3">
+                        #{adminDashboardBean.totalOrders}
+                    </h2>
+                    <p class="text-slate-500 mt-2">Purchase requests</p>
+                </div>
+
+            </div>
+
+            <!-- Visual analytics -->
+            <!-- Visual analytics -->
+            <div class="grid lg:grid-cols-2 gap-6 mb-8">
+
+                <!-- Product category pie chart -->
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">
+                        Products by Category
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mb-6">
+                        Distribution of marketplace products across categories.
+                    </p>
+
+                    <div class="flex flex-col md:flex-row items-center gap-8">
+
+                        <!-- Pie chart -->
+                        <div class="w-52 h-52 min-w-52 min-h-52 aspect-square rounded-full shadow-inner flex-shrink-0"
+                             style="background: conic-gradient(
+                    #0f172a 0% #{adminDashboardBean.electronicsPercentage}%,
+                    #475569 #{adminDashboardBean.electronicsPercentage}% #{adminDashboardBean.furnitureEndPercentage}%,
+                    #94a3b8 #{adminDashboardBean.furnitureEndPercentage}% #{adminDashboardBean.booksEndPercentage}%,
+                    #cbd5e1 #{adminDashboardBean.booksEndPercentage}% #{adminDashboardBean.accessoriesEndPercentage}%,
+                    #e2e8f0 #{adminDashboardBean.accessoriesEndPercentage}% 100%
+                 );">
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="space-y-3 w-full">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-slate-700">Electronics</span>
+                                <span class="text-slate-500">#{adminDashboardBean.electronicsProducts}</span>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-slate-700">Furniture</span>
+                                <span class="text-slate-500">#{adminDashboardBean.furnitureProducts}</span>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-slate-700">Books</span>
+                                <span class="text-slate-500">#{adminDashboardBean.booksProducts}</span>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-slate-700">Accessories</span>
+                                <span class="text-slate-500">#{adminDashboardBean.accessoriesProducts}</span>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-slate-700">Other</span>
+                                <span class="text-slate-500">#{adminDashboardBean.otherProducts}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Order status overview -->
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">
+                        Order Status Overview
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mb-6">
+                        Overview of pending, approved, and rejected orders.
+                    </p>
+
+                    <div class="grid grid-cols-3 gap-4 text-center">
+
+                        <div class="bg-slate-50 rounded-2xl p-5">
+                            <p class="text-4xl font-extrabold text-slate-900">
+                                #{adminDashboardBean.pendingOrders}
+                            </p>
+                            <p class="text-sm text-slate-500 mt-2">Pending</p>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-2xl p-5">
+                            <p class="text-4xl font-extrabold text-slate-900">
+                                #{adminDashboardBean.approvedOrders}
+                            </p>
+                            <p class="text-sm text-slate-500 mt-2">Approved</p>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-2xl p-5">
+                            <p class="text-4xl font-extrabold text-slate-900">
+                                #{adminDashboardBean.rejectedOrders}
+                            </p>
+                            <p class="text-sm text-slate-500 mt-2">Rejected</p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Quick actions -->
+            <div class="grid md:grid-cols-4 gap-6">
+
+                <h:link outcome="/admin/users.xhtml"
+                        styleClass="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Manage Users</h3>
+                    <p class="text-slate-600 text-sm">View registered users and contact information.</p>
+                </h:link>
+
+                <h:link outcome="/admin/products.xhtml"
+                        styleClass="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Manage Products</h3>
+                    <p class="text-slate-600 text-sm">Review and delete marketplace products.</p>
+                </h:link>
+
+                <h:link outcome="/admin/orders.xhtml"
+                        styleClass="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Manage Orders</h3>
+                    <p class="text-slate-600 text-sm">Monitor purchase requests and order status.</p>
+                </h:link>
+
+                <h:link outcome="/admin/account.xhtml"
+                        styleClass="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Admin Account</h3>
+                    <p class="text-slate-600 text-sm">Edit administrator account information.</p>
+                </h:link>
+
+            </div>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets">
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:c="jakarta.tags.core">
 
 <h:head>
     <title>
@@ -19,23 +20,110 @@
                    class="text-2xl font-extrabold text-slate-900 tracking-tight">
                     DAW Market
                 </a>
-                <p class="text-sm text-slate-500">Buy, sell and manage products easily</p>
+                <p class="text-sm text-slate-500">Student marketplace for buying and selling products</p>
             </div>
 
             <nav class="flex items-center gap-3">
-                <a href="#{request.contextPath}/index.xhtml"
-                   class="px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-                    Home
-                </a>
-                <a href="#{request.contextPath}/products/list.xhtml"
-                   class="px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-                    Products
-                </a>
-                <a href="#{request.contextPath}/products/create.xhtml"
-                   class="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition">
-                    Sell Product
-                </a>
+
+                <h:link outcome="/index.xhtml"
+                        value="Home"
+                        rendered="#{not authBean.admin}"
+                        styleClass="#{currentPage eq '/index.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                <h:link outcome="/products/browse.xhtml"
+                        value="Browse Products"
+                        rendered="#{not authBean.admin}"
+                        styleClass="#{currentPage eq '/products/browse.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                <!-- Guest navbar -->
+                <h:panelGroup rendered="#{not authBean.loggedIn}" layout="block" styleClass="flex items-center gap-3">
+                    <h:link outcome="/auth/login.xhtml"
+                            value="Login"
+                            styleClass="#{currentPage eq '/auth/login.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                    <h:link outcome="/auth/register.xhtml"
+                            value="Sign Up"
+                            styleClass="#{currentPage eq '/auth/register.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+                </h:panelGroup>
+
+                <!-- Normal user navbar -->
+                <h:panelGroup rendered="#{authBean.user}" layout="block" styleClass="flex items-center gap-3">
+                    <h:link outcome="/products/list.xhtml"
+                            value="My Products"
+                            styleClass="#{currentPage eq '/products/list.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                    <h:link outcome="/orders/purchases.xhtml"
+                            value="My Orders"
+                            styleClass="#{currentPage eq '/orders/purchases.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                    <h:link outcome="/profile/profile.xhtml"
+                            value="#{authBean.currentUser.username}"
+                            styleClass="#{currentPage eq '/profile/profile.xhtml' or currentPage eq '/profile/edit-profile.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white font-medium transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 font-medium hover:bg-slate-100 transition'}" />
+
+                    <h:form styleClass="inline">
+                        <h:commandButton value="Logout"
+                                         action="#{authBean.logout}"
+                                         styleClass="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition" />
+                    </h:form>
+                </h:panelGroup>
+
+                <!-- Admin navbar -->
+                <!-- Admin navbar -->
+                <h:panelGroup rendered="#{authBean.admin}" layout="block" styleClass="flex items-center gap-3">
+
+                    <h:link outcome="/admin/dashboard.xhtml"
+                            value="Admin Dashboard"
+                            styleClass="#{currentPage eq '/admin/dashboard.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                    <h:link outcome="/admin/users.xhtml"
+                            value="Users"
+                            styleClass="#{currentPage eq '/admin/users.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                    <h:link outcome="/admin/products.xhtml"
+                            value="Products"
+                            styleClass="#{currentPage eq '/admin/products.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                    <h:link outcome="/admin/orders.xhtml"
+                            value="Orders"
+                            styleClass="#{currentPage eq '/admin/orders.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition'}" />
+
+                    <h:link outcome="/admin/account.xhtml"
+                            value="#{authBean.currentUser.username}"
+                            styleClass="#{currentPage eq '/admin/account.xhtml'
+            ? 'px-4 py-2 rounded-lg bg-slate-900 text-white font-semibold transition'
+            : 'px-4 py-2 rounded-lg text-slate-700 font-semibold hover:bg-slate-100 transition'}" />
+
+                    <h:form styleClass="inline">
+                        <h:commandButton value="Logout"
+                                         action="#{authBean.logout}"
+                                         styleClass="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition" />
+                    </h:form>
+
+                </h:panelGroup>
             </nav>
+
         </div>
     </header>
 
@@ -43,4 +131,7 @@
         <ui:insert name="content" />
     </main>
 </h:body>
+
+<c:set var="currentPage" value="#{view.viewId}" />
+
 </html>

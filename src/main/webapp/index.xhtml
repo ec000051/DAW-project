@@ -1,61 +1,111 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
 
     <ui:define name="title">Home</ui:define>
 
     <ui:define name="content">
-        <section class="grid md:grid-cols-2 gap-10 items-center">
+        <section class="grid md:grid-cols-2 gap-10 items-center mb-14">
             <div>
                 <span class="inline-block bg-slate-900 text-white text-sm px-3 py-1 rounded-full mb-4">
-                    Student Marketplace Demo
+                    Student Marketplace
                 </span>
 
                 <h1 class="text-5xl font-extrabold tracking-tight text-slate-900 leading-tight mb-6">
-                    A simple marketplace built with Jakarta Faces and Tailwind CSS
+                    Buy and sell second-hand products easily
                 </h1>
 
                 <p class="text-lg text-slate-600 mb-8 leading-relaxed">
-                    Explore products, create listings, edit information and manage your marketplace through a clean and modern interface.
+                    Discover products from other students, explore categories, and create your own listings once you sign up.
                 </p>
 
                 <div class="flex flex-wrap gap-4">
-                    <a href="#{request.contextPath}/products/list.xhtml"
+                    <a href="#{request.contextPath}/products/browse.xhtml"
                        class="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition">
                         Browse Products
                     </a>
 
-                    <a href="#{request.contextPath}/products/create.xhtml"
+                    <a href="#{request.contextPath}/auth/register.xhtml"
                        class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition">
-                        Add Product
+                        Create Account
                     </a>
                 </div>
             </div>
 
             <div class="bg-white rounded-3xl shadow-lg border border-slate-200 p-8">
-                <div class="grid grid-cols-2 gap-4">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">How it works</h2>
+
+                <div class="space-y-4">
                     <div class="bg-slate-100 rounded-2xl p-5">
-                        <p class="text-sm text-slate-500 mb-2">Fast management</p>
-                        <h3 class="text-xl font-bold">CRUD ready</h3>
+                        <p class="text-sm text-slate-500 mb-1">Step 1</p>
+                        <h3 class="text-xl font-bold">Browse available products</h3>
                     </div>
 
                     <div class="bg-slate-100 rounded-2xl p-5">
-                        <p class="text-sm text-slate-500 mb-2">Design</p>
-                        <h3 class="text-xl font-bold">Tailwind UI</h3>
+                        <p class="text-sm text-slate-500 mb-1">Step 2</p>
+                        <h3 class="text-xl font-bold">Open product details</h3>
                     </div>
 
                     <div class="bg-slate-100 rounded-2xl p-5">
-                        <p class="text-sm text-slate-500 mb-2">Architecture</p>
-                        <h3 class="text-xl font-bold">MVC + DAO</h3>
-                    </div>
-
-                    <div class="bg-slate-100 rounded-2xl p-5">
-                        <p class="text-sm text-slate-500 mb-2">Storage</p>
-                        <h3 class="text-xl font-bold">In-memory</h3>
+                        <p class="text-sm text-slate-500 mb-1">Step 3</p>
+                        <h3 class="text-xl font-bold">Log in to buy or sell</h3>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <section>
+            <div class="flex items-end justify-between mb-6">
+                <div>
+                    <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">Marketplace</p>
+                    <h2 class="text-3xl font-extrabold text-slate-900">Latest products test</h2>
+                </div>
+
+                <a href="#{request.contextPath}/products/browse.xhtml"
+                   class="text-slate-900 font-semibold hover:underline">
+                    View all products
+                </a>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6">
+
+                <ui:repeat value="#{productBean.latestProducts}" var="p">
+                    <a href="#{request.contextPath}/products/detail.xhtml?id=#{p.id}"
+                       class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition block">
+
+                        <div class="h-40 bg-slate-100 flex items-center justify-center overflow-hidden">
+                            <h:graphicImage value="#{p.imageUrl}"
+                                            rendered="#{not empty p.imageUrl}"
+                                            styleClass="w-full h-full object-contain p-2" />
+
+                            <h:panelGroup rendered="#{empty p.imageUrl}"
+                                          layout="block"
+                                          styleClass="text-slate-500">
+                                No image
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg text-slate-900">
+                                #{p.name}
+                            </h3>
+
+                            <p class="text-slate-500 text-sm mb-3">
+                                #{p.category}
+                            </p>
+
+                            <p class="font-extrabold text-slate-900">
+                                €#{p.price}
+                            </p>
+                        </div>
+                    </a>
+                </ui:repeat>
+
+            </div>
+
         </section>
     </ui:define>
 

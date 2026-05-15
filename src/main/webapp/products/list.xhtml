@@ -2,11 +2,27 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
                 xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{authBean.requireUser}" />
+    </f:metadata>
 
     <ui:define name="title">Products</ui:define>
 
     <ui:define name="content">
+
+        <div class="flex items-center gap-3 mb-8">
+
+            <button type="button"
+                    onclick="history.back()"
+                    class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
+                ← Back
+            </button>
+
+        </div>
+
         <div class="space-y-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
@@ -15,11 +31,18 @@
                     <p class="text-slate-600 mt-2">Manage the items available in your marketplace.</p>
                 </div>
 
-                <h:form>
-                    <h:commandLink value="Add New Product"
-                                   action="#{productBean.prepareCreate}"
-                                   styleClass="inline-block bg-slate-900 text-white px-5 py-3 rounded-xl hover:bg-slate-800 transition shadow-sm" />
-                </h:form>
+                <div class="flex flex-wrap gap-3">
+                    <a href="#{request.contextPath}/orders/sales.xhtml"
+                       class="inline-block bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition shadow-sm">
+                        View Orders Received
+                    </a>
+
+                    <h:form>
+                        <h:commandLink value="Add New Product"
+                                       action="#{productBean.prepareCreate}"
+                                       styleClass="inline-block bg-slate-900 text-white px-5 py-3 rounded-xl hover:bg-slate-800 transition shadow-sm" />
+                    </h:form>
+                </div>
             </div>
 
             <div class="grid md:grid-cols-3 gap-4">
@@ -49,6 +72,7 @@
                         <thead class="bg-slate-100">
                         <tr>
                             <th class="text-left px-6 py-4 text-sm font-semibold text-slate-700">ID</th>
+                            <th class="text-left px-6 py-4 text-sm font-semibold text-slate-700">Image</th>
                             <th class="text-left px-6 py-4 text-sm font-semibold text-slate-700">Product</th>
                             <th class="text-left px-6 py-4 text-sm font-semibold text-slate-700">Price</th>
                             <th class="text-left px-6 py-4 text-sm font-semibold text-slate-700">Description</th>
@@ -60,6 +84,19 @@
                         <ui:repeat value="#{productBean.products}" var="p">
                             <tr class="border-t border-slate-200 hover:bg-slate-50 transition">
                                 <td class="px-6 py-4 text-slate-500">#{p.id}</td>
+                                <td class="px-6 py-4">
+                                    <div class="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
+                                        <h:graphicImage value="#{p.imageUrl}"
+                                                        rendered="#{not empty p.imageUrl}"
+                                                        styleClass="w-full h-full object-cover" />
+
+                                        <h:panelGroup rendered="#{empty p.imageUrl}"
+                                                      layout="block"
+                                                      styleClass="text-xs text-slate-400 text-center px-2">
+                                            No image
+                                        </h:panelGroup>
+                                    </div>
+                                </td>
                                 <td class="px-6 py-4">
                                     <div>
                                         <p class="font-semibold text-slate-900">#{p.name}</p>

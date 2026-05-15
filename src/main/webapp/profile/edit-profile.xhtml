@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:pt="jakarta.faces.passthrough"
+                template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{authBean.requireUser}" />
+    </f:metadata>
+
+    <ui:define name="title">Edit Profile</ui:define>
+
+
+
+    <ui:define name="content">
+        <div class="flex items-center gap-3 mb-8">
+
+            <button type="button"
+                    onclick="history.back()"
+                    class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
+                ← Back
+            </button>
+
+        </div>
+
+        <section class="max-w-2xl mx-auto">
+            <div class="mb-8">
+                <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">Account</p>
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-3">Edit Profile</h1>
+                <p class="text-slate-600">Update your public profile and contact information.</p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
+                <h:form styleClass="space-y-5">
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Username</label>
+                        <h:inputText value="#{authBean.currentUser.username}"
+                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Email / Contact</label>
+                        <h:inputText value="#{authBean.currentUser.email}"
+                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Profile Image URL</label>
+                        <h:inputText value="#{authBean.currentUser.profileImage}"
+                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                     pt:placeholder="https://example.com/profile.jpg" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Bio / Contact Info</label>
+                        <h:inputTextarea value="#{authBean.currentUser.bio}"
+                                         rows="5"
+                                         styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                         pt:placeholder="Example: Contact me by WhatsApp or email. I usually respond in the afternoon." />
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <h:commandButton value="Save Changes"
+                                         action="#{authBean.updateProfile}"
+                                         styleClass="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition font-semibold" />
+
+                        <a href="#{request.contextPath}/profile/profile.xhtml?id=#{authBean.currentUser.id}"
+                           class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition">
+                            Cancel
+                        </a>
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-6 mt-6"
+                         x-data="{ openDeleteModal: false }">
+
+                        <button type="button"
+                                onclick="document.getElementById('deleteAccountModal').classList.remove('hidden')"
+                                class="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition font-semibold">
+                            Delete My Account
+                        </button>
+
+                        <div id="deleteAccountModal"
+                             class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+
+                            <div class="bg-white rounded-3xl shadow-xl max-w-md w-full p-8">
+                                <h2 class="text-2xl font-extrabold text-slate-900 mb-3">
+                                    Delete account?
+                                </h2>
+
+                                <p class="text-slate-600 mb-6">
+                                    This will permanently delete your account, your products, and your related orders. This action cannot be undone.
+                                </p>
+
+                                <div class="flex justify-end gap-3">
+                                    <button type="button"
+                                            onclick="document.getElementById('deleteAccountModal').classList.add('hidden')"
+                                            class="bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
+                                        Cancel
+                                    </button>
+
+                                    <h:commandButton value="Yes, Delete Account"
+                                                     action="#{authBean.deleteMyAccount}"
+                                                     styleClass="bg-red-600 text-white px-5 py-3 rounded-xl hover:bg-red-700 transition font-semibold" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </h:form>
+            </div>
+        </section>
+    </ui:define>
+
+</ui:composition>

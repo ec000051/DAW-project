@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:jsf="jakarta.faces"
+                xmlns:f="jakarta.faces.core"
+                xmlns:pt="jakarta.faces.passthrough"
+                template="/templates/main.xhtml">
+
+    <ui:define name="title">Browse Products</ui:define>
+
+    <ui:define name="content">
+        <section class="mb-8">
+            <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">Marketplace</p>
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-3">Browse Products</h1>
+            <p class="text-slate-600">Explore all products available from students.</p>
+        </section>
+
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-5 mb-8">
+            <h:form>
+                <div class="grid md:grid-cols-5 gap-4">
+                    <h:inputText value="#{productBean.searchKeyword}"
+                                 pt:placeholder="Search products..."
+                                 styleClass="md:col-span-2 border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+
+                    <h:selectOneMenu value="#{productBean.selectedCategory}"
+                                     styleClass="border border-slate-300 rounded-xl px-4 py-3 bg-white">
+                        <f:selectItem itemValue="ALL" itemLabel="All categories" />
+                        <f:selectItem itemValue="Electronics" itemLabel="Electronics" />
+                        <f:selectItem itemValue="Furniture" itemLabel="Furniture" />
+                        <f:selectItem itemValue="Books" itemLabel="Books" />
+                        <f:selectItem itemValue="Accessories" itemLabel="Accessories" />
+                        <f:selectItem itemValue="Other" itemLabel="Other" />
+                    </h:selectOneMenu>
+
+                    <h:commandButton value="Search"
+                                     action="#{productBean.search}"
+                                     styleClass="bg-slate-900 text-white rounded-xl px-4 py-3 hover:bg-slate-800" />
+
+                    <h:commandButton value="Clear"
+                                     action="#{productBean.clearFilters}"
+                                     styleClass="bg-white border border-slate-300 text-slate-800 rounded-xl px-4 py-3 hover:bg-slate-100" />
+                </div>
+            </h:form>
+        </section>
+
+        <ui:fragment rendered="#{empty productBean.filteredProducts}">
+            <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-12 text-center mb-8">
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-3">
+                    No products found
+                </h2>
+
+                <p class="text-slate-500 max-w-md mx-auto">
+                    We could not find any products matching your search or selected category.
+                    Try changing the filters or searching for something else.
+                </p>
+            </div>
+        </ui:fragment>
+
+        <section class="grid md:grid-cols-4 gap-6">
+            <ui:repeat value="#{productBean.filteredProducts}" var="p">
+                <a href="#{request.contextPath}/products/detail.xhtml?id=#{p.id}"
+                   class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
+                    <div class="h-44 bg-slate-200 overflow-hidden">
+                        <h:graphicImage value="#{p.imageUrl}"
+                                        rendered="#{not empty p.imageUrl}"
+                                        styleClass="w-full h-full object-cover" />
+
+                        <div class="h-full flex items-center justify-center text-slate-500"
+                             jsf:rendered="#{empty p.imageUrl}">
+                            No Image
+                        </div>
+                    </div>
+
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg">#{p.name}</h3>
+                        <p class="text-slate-500 text-sm mb-3">#{p.description}</p>
+                        <p class="font-extrabold text-slate-900">€#{p.price}</p>
+                        <span class="inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+                            #{p.status}
+                        </span>
+                    </div>
+                </a>
+            </ui:repeat>
+        </section>
+    </ui:define>
+
+</ui:composition>

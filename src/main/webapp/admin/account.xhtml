@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{authBean.requireAdmin}" />
+    </f:metadata>
+
+    <ui:define name="title">Admin Account</ui:define>
+
+
+    <ui:define name="content">
+
+        <section class="mb-8">
+            <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">
+                Administration
+            </p>
+
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-3">
+                Admin Account
+            </h1>
+
+            <p class="text-slate-600">
+                Manage your administrator account information.
+            </p>
+        </section>
+
+        <section class="grid md:grid-cols-3 gap-6">
+
+            <!-- Left profile card -->
+            <div class="md:col-span-1 bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
+
+                <div class="w-24 h-24 rounded-full bg-slate-900 text-white flex items-center justify-center text-3xl font-extrabold mb-5">
+                    #{authBean.currentUser.username.substring(0,1).toUpperCase()}
+                </div>
+
+                <h2 class="text-2xl font-bold text-slate-900">
+                    #{authBean.currentUser.username}
+                </h2>
+
+                <p class="text-slate-500 mt-1">
+                    Administrator
+                </p>
+
+            </div>
+
+            <!-- Right info card -->
+            <div class="md:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
+
+                <h2 class="text-xl font-bold text-slate-900 mb-5">
+                    Account Details
+                </h2>
+
+                <div class="space-y-4">
+
+                    <div>
+                        <p class="text-sm text-slate-500">Username</p>
+                        <p class="font-semibold text-slate-900">
+                            #{authBean.currentUser.username}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-slate-500">Email</p>
+                        <p class="font-semibold text-slate-900">
+                            #{authBean.currentUser.email}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-slate-500">Role</p>
+                        <p class="font-semibold text-slate-900">
+                            #{authBean.currentUser.role}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Quick actions -->
+        <section class="mt-8">
+
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-4">
+                Quick Actions
+            </h2>
+
+            <div class="grid md:grid-cols-4 gap-4">
+
+                <a href="#{request.contextPath}/admin/dashboard.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                    <h3 class="font-bold text-slate-900 mb-1">
+                        Dashboard
+                    </h3>
+
+                    <p class="text-sm text-slate-500">
+                        Return to the admin dashboard.
+                    </p>
+                </a>
+
+                <a href="#{request.contextPath}/admin/users.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                    <h3 class="font-bold text-slate-900 mb-1">
+                        Manage Users
+                    </h3>
+
+                    <p class="text-sm text-slate-500">
+                        View registered users.
+                    </p>
+                </a>
+
+                <a href="#{request.contextPath}/admin/products.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                    <h3 class="font-bold text-slate-900 mb-1">
+                        Manage Products
+                    </h3>
+
+                    <p class="text-sm text-slate-500">
+                        Review marketplace products.
+                    </p>
+                </a>
+
+                <a href="#{request.contextPath}/admin/edit-account.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                    <h3 class="font-bold text-slate-900 mb-1">
+                        Edit Account
+                    </h3>
+
+                    <p class="text-sm text-slate-500">
+                        Update your administrator information.
+                    </p>
+                </a>
+
+            </div>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>

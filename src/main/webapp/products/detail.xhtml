@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{productBean.loadProductById}" />
+    </f:metadata>
+
+    <ui:define name="title">Product Details</ui:define>
+
+
+
+    <ui:define name="content">
+        <div class="flex items-center gap-3 mb-8">
+
+            <button type="button"
+                    onclick="history.back()"
+                    class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
+                ← Back
+            </button>
+
+        </div>
+
+        <section class="grid lg:grid-cols-2 gap-10 items-start max-w-6xl mx-auto">
+            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm h-fit">
+                <div class="aspect-square bg-slate-100 flex items-center justify-center overflow-hidden">
+                    <h:graphicImage value="#{productBean.product.imageUrl}"
+                                    rendered="#{not empty productBean.product.imageUrl}"
+                                    styleClass="max-w-full max-h-full object-contain p-8" />
+
+                    <h:panelGroup rendered="#{empty productBean.product.imageUrl}"
+                                  layout="block"
+                                  styleClass="h-full flex items-center justify-center text-slate-500 text-xl">
+                        No Image
+                    </h:panelGroup>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+                <span class="inline-block bg-slate-100 text-slate-700 text-sm px-3 py-1 rounded-full mb-4">
+                    #{productBean.product.category}
+                </span>
+
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-4">
+                    #{productBean.product.name}
+                </h1>
+
+                <p class="text-3xl font-extrabold text-slate-900 mb-6">
+                    €#{productBean.product.price}
+                </p>
+
+                <p class="text-slate-600 leading-relaxed mb-8">
+                    #{productBean.product.description}
+                </p>
+
+                <div class="border-t border-slate-200 pt-6 mb-8">
+                    <h2 class="font-bold text-slate-900 mb-2">Seller information</h2>
+                    <p class="text-slate-600">Sold by: #{productBean.product.owner.username}</p>
+                    <p class="text-slate-600">Status: #{productBean.product.status}</p>
+                </div>
+
+                <div class="flex flex-wrap gap-4">
+
+                    <!-- Contact / View Seller -->
+                    <h:panelGroup rendered="#{authBean.currentUser == null or authBean.currentUser.id ne productBean.product.owner.id}">
+                        <a href="#{request.contextPath}/users/profile.xhtml?id=#{productBean.product.owner.id}"
+                           class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition inline-block">
+                            View Seller Profile
+                        </a>
+                    </h:panelGroup>
+
+                    <!-- Guest button -->
+                    <h:panelGroup rendered="#{!authBean.loggedIn}">
+                        <a href="#{request.contextPath}/auth/login.xhtml"
+                           class="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition inline-block">
+                            Login to Order
+                        </a>
+                    </h:panelGroup>
+
+                    <!-- Logged-in user button (NOT owner) -->
+                    <h:panelGroup rendered="#{authBean.loggedIn and authBean.currentUser.id ne productBean.product.owner.id}">
+                        <h:form>
+                            <h:commandButton value="Place Order"
+                                             action="#{orderBean.goToCheckout}"
+                                             styleClass="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition">
+                                <f:param name="id" value="#{productBean.product.id}" />
+                            </h:commandButton>
+                        </h:form>
+                    </h:panelGroup>
+
+                    <!-- Owner message -->
+                    <h:panelGroup rendered="#{authBean.loggedIn and authBean.currentUser.id eq productBean.product.owner.id}">
+                        <span class="bg-slate-100 text-slate-600 px-6 py-3 rounded-xl">
+                            This is your product
+                        </span>
+                    </h:panelGroup>
+
+                    <a href="#{request.contextPath}/products/browse.xhtml"
+                       class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition inline-block">
+                        Continue Browsing
+                    </a>
+
+                </div>
+            </div>
+        </section>
+    </ui:define>
+
+</ui:composition>

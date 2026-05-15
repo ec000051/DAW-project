@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{sellerProfileBean.loadSeller}" />
+    </f:metadata>
+
+    <ui:define name="title">User Profile</ui:define>
+
+    <ui:define name="content">
+
+        <div class="mb-8">
+            <button type="button"
+                    onclick="history.back()"
+                    class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
+                ← Back
+            </button>
+        </div>
+
+        <section class="mb-8">
+            <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">User Profile</p>
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-3">
+                #{sellerProfileBean.seller.username}
+            </h1>
+            <p class="text-slate-600">
+                View this user's contact information and marketplace products.
+            </p>
+        </section>
+
+        <section class="grid md:grid-cols-3 gap-6 mb-10">
+
+            <!-- Seller card -->
+            <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8 text-center flex flex-col items-center">
+
+                <h:graphicImage value="#{sellerProfileBean.seller.profileImage}"
+                                rendered="#{not empty sellerProfileBean.seller.profileImage}"
+                                styleClass="w-28 h-28 rounded-full object-cover mb-6 ring-4 ring-slate-100" />
+
+                <h:panelGroup rendered="#{empty sellerProfileBean.seller.profileImage}"
+                              layout="block"
+                              styleClass="w-28 h-28 rounded-full bg-slate-900 text-white flex items-center justify-center text-4xl font-extrabold mb-6 ring-4 ring-slate-100">
+                    #{sellerProfileBean.seller.username.substring(0,1).toUpperCase()}
+                </h:panelGroup>
+
+                <h2 class="text-2xl font-extrabold text-slate-900">
+                    #{sellerProfileBean.seller.username}
+                </h2>
+
+                <p class="text-slate-500 mt-2">
+                    #{sellerProfileBean.seller.email}
+                </p>
+
+
+            </div>
+
+            <!-- Contact info card -->
+            <div class="md:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-3">Contact information</h2>
+
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Use the information below to contact this seller outside the platform.
+                    After agreeing privately, you can return to the product page and place an order request.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-1">Email</p>
+                        <p class="font-semibold text-slate-900">
+                            #{sellerProfileBean.seller.email}
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-1">Contact Message</p>
+                        <p class="font-semibold text-slate-900 leading-relaxed">
+                            #{empty sellerProfileBean.seller.bio ? 'No contact information added yet.' : sellerProfileBean.seller.bio}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section>
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">Products</p>
+                    <h2 class="text-2xl font-extrabold text-slate-900">Products by this user</h2>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6">
+                <ui:repeat value="#{sellerProfileBean.sellerProducts}" var="p">
+                    <a href="#{request.contextPath}/products/detail.xhtml?id=#{p.id}"
+                       class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
+
+                        <div class="h-44 bg-slate-200 overflow-hidden">
+                            <h:graphicImage value="#{p.imageUrl}"
+                                            rendered="#{not empty p.imageUrl}"
+                                            styleClass="w-full h-full object-cover" />
+
+                            <h:panelGroup rendered="#{empty p.imageUrl}"
+                                          layout="block"
+                                          styleClass="h-full flex items-center justify-center text-slate-500">
+                                No Image
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg text-slate-900">#{p.name}</h3>
+                            <p class="text-slate-500 text-sm mb-3">#{p.description}</p>
+                            <p class="font-extrabold text-slate-900">€#{p.price}</p>
+
+                            <span class="inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold
+                                #{p.status eq 'AVAILABLE' ? 'bg-green-100 text-green-700' : ''}
+                                #{p.status eq 'RESERVED' ? 'bg-yellow-100 text-yellow-800' : ''}
+                                #{p.status eq 'SOLD' ? 'bg-red-100 text-red-700' : ''}
+                                #{p.status eq 'UNAVAILABLE' ? 'bg-slate-100 text-slate-700' : ''}">
+                                #{p.status}
+                            </span>
+                        </div>
+                    </a>
+                </ui:repeat>
+            </div>
+        </section>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/templates/main.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{authBean.requireUser}" />
+    </f:metadata>
+
+    <ui:define name="title">My Profile</ui:define>
+
+    <ui:define name="content">
+
+        <!-- Header -->
+        <section class="mb-8">
+            <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">
+                Account
+            </p>
+
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-3">
+                My Profile
+            </h1>
+
+            <p class="text-slate-600">
+                Manage your DAW Market account information.
+            </p>
+        </section>
+
+        <!-- Profile layout -->
+        <section class="grid md:grid-cols-3 gap-6">
+
+            <!-- Left profile card -->
+            <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8 text-center flex flex-col items-center self-start">
+
+                <!-- Profile image -->
+                <h:graphicImage value="#{authBean.currentUser.profileImage}"
+                                rendered="#{not empty authBean.currentUser.profileImage}"
+                                styleClass="w-28 h-28 rounded-full object-cover mb-6 ring-4 ring-slate-100" />
+
+                <!-- Default avatar -->
+                <h:panelGroup rendered="#{empty authBean.currentUser.profileImage}"
+                              layout="block"
+                              styleClass="w-28 h-28 rounded-full bg-slate-900 text-white flex items-center justify-center text-4xl font-extrabold mb-6 ring-4 ring-slate-100">
+                    #{authBean.currentUser.username.substring(0,1).toUpperCase()}
+                </h:panelGroup>
+
+                <h2 class="text-2xl font-extrabold text-slate-900">
+                    #{authBean.currentUser.username}
+                </h2>
+
+                <p class="text-slate-500 mt-2 uppercase tracking-wide text-sm">
+                    #{authBean.currentUser.role}
+                </p>
+
+            </div>
+
+            <!-- Right details card -->
+            <div class="md:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
+
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900">
+                            Account details
+                        </h2>
+
+                        <p class="text-slate-500 mt-1">
+                            Your personal marketplace information.
+                        </p>
+                    </div>
+
+                    <a href="#{request.contextPath}/profile/edit-profile.xhtml"
+                       class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl hover:bg-slate-800 transition">
+                        Edit Profile
+                    </a>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-5">
+
+                    <!-- Username -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-1">
+                            Username
+                        </p>
+
+                        <p class="font-bold text-slate-900">
+                            #{authBean.currentUser.username}
+                        </p>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-1">
+                            Email
+                        </p>
+
+                        <p class="font-bold text-slate-900 break-all">
+                            #{authBean.currentUser.email}
+                        </p>
+                    </div>
+
+                    <!-- Contact info -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 md:col-span-2">
+                        <p class="text-sm text-slate-500 mb-1">
+                            Contact Information
+                        </p>
+
+                        <p class="font-bold text-slate-900 leading-relaxed">
+                            #{empty authBean.currentUser.bio
+                                    ? 'No contact information added yet.'
+                                    : authBean.currentUser.bio}
+                        </p>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                        <p class="text-sm text-slate-500 mb-1">
+                            Account Role
+                        </p>
+
+                        <p class="font-bold text-slate-900">
+                            #{authBean.currentUser.role}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Quick actions -->
+        <section class="mt-10">
+
+            <div class="mb-5">
+                <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">
+                    Dashboard
+                </p>
+
+                <h2 class="text-2xl font-extrabold text-slate-900">
+                    Quick actions
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-4">
+
+                <a href="#{request.contextPath}/products/list.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                    <h3 class="font-bold text-slate-900 mb-1">
+                        My Products
+                    </h3>
+
+                    <p class="text-sm text-slate-500">
+                        Manage listings you are selling.
+                    </p>
+                </a>
+
+                <a href="#{request.contextPath}/orders/purchases.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                    <h3 class="font-bold text-slate-900 mb-1">
+                        My Purchases
+                    </h3>
+
+                    <p class="text-sm text-slate-500">
+                        View products you requested to buy.
+                    </p>
+                </a>
+
+                <a href="#{request.contextPath}/orders/sales.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                    <h3 class="font-bold text-slate-900 mb-1">
+                        Orders Received
+                    </h3>
+
+                    <p class="text-sm text-slate-500">
+                        Review purchase requests for your products.
+                    </p>
+                </a>
+
+                <a href="#{request.contextPath}/profile/edit-profile.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                    <h3 class="font-bold text-slate-900 mb-1">
+                        Edit Profile
+                    </h3>
+
+                    <p class="text-sm text-slate-500">
+                        Update your account information.
+                    </p>
+                </a>
+
+            </div>
+
+        </section>
+
+    </ui:define>
+
+</ui:composition>
