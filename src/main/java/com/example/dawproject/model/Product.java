@@ -103,4 +103,8 @@ public class Product implements Serializable {
     public void setOwner(User owner) {
         this.owner = owner;
     }
+
+
+
+
 }

@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core"
-                xmlns:jsf="jakarta.faces"
                 template="/templates/main.xhtml">
 
     <f:metadata>
@@ -12,18 +10,16 @@
 
     <ui:define name="title">Orders Received</ui:define>
 
-
-
     <ui:define name="content">
-        <div class="flex items-center gap-3 mb-8">
 
+        <div class="flex items-center gap-3 mb-8">
             <button type="button"
                     onclick="history.back()"
                     class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
                 ← Back
             </button>
-
         </div>
+
         <section class="mb-8">
             <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">Seller Panel</p>
             <h1 class="text-4xl font-extrabold text-slate-900 mb-3">Orders Received</h1>
@@ -37,96 +33,231 @@
                 <p class="text-sm text-slate-500">Review orders connected to your listed products.</p>
             </div>
 
-            <h:dataTable value="#{orderBean.mySales}"
-                         var="order"
-                         styleClass="w-full text-left border-collapse"
-                         headerClass="bg-slate-100 text-slate-700 text-sm uppercase tracking-wide"
-                         rowClasses="border-b border-slate-100 hover:bg-slate-50 transition">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-100 text-slate-700 text-sm uppercase tracking-wide">
+                    <tr>
+                        <th><span class="block px-6 py-4">Order ID</span></th>
+                        <th><span class="block px-6 py-4">Product</span></th>
+                        <th><span class="block px-6 py-4">Buyer</span></th>
+                        <th><span class="block px-6 py-4">Note</span></th>
+                        <th><span class="block px-6 py-4">Price</span></th>
+                        <th><span class="block px-6 py-4">Status</span></th>
+                        <th><span class="block px-6 py-4">Actions</span></th>
+                    </tr>
+                    </thead>
 
-                <h:column>
-                    <f:facet name="header">
-                        <span class="block px-6 py-4">Order ID</span>
-                    </f:facet>
-                    <span class="block px-6 py-4 text-slate-700 font-medium">
-                        ##{order.id}
-                    </span>
-                </h:column>
+                    <tbody id="salesTableBody">
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-slate-500">
+                            Loading sales requests...
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-                <h:column>
-                    <f:facet name="header">
-                        <span class="block px-6 py-4">Product</span>
-                    </f:facet>
-                    <div class="px-6 py-4">
-                        <p class="font-bold text-slate-900">#{order.productName}</p>
-                        <p class="text-sm text-slate-500">Marketplace item</p>
-                    </div>
-                </h:column>
-
-                <h:column>
-                    <f:facet name="header">
-                        <span class="block px-6 py-4">Buyer</span>
-                    </f:facet>
-                    <span class="block px-6 py-4 text-slate-700">
-                        #{order.buyer.username}
-                    </span>
-                </h:column>
-
-                <h:column>
-                    <f:facet name="header">
-                        <span class="block px-6 py-4">Note</span>
-                    </f:facet>
-                    <span class="block px-6 py-4 text-slate-700">
-                        #{order.contactMessage}
-                    </span>
-                </h:column>
-
-                <h:column>
-                    <f:facet name="header">
-                        <span class="block px-6 py-4">Price</span>
-                    </f:facet>
-                    <span class="block px-6 py-4 font-bold text-slate-900">
-                        €#{order.price}
-                    </span>
-                </h:column>
-
-                <h:column>
-                    <f:facet name="header">
-                        <span class="block px-6 py-4">Status</span>
-                    </f:facet>
-                    <span class="inline-block mx-6 my-4 px-3 py-1 rounded-full text-sm font-semibold
-                        #{order.status eq 'APPROVED' ? 'bg-green-100 text-green-700' : ''}
-                        #{order.status eq 'REJECTED' ? 'bg-red-100 text-red-700' : ''}
-                        #{order.status eq 'PENDING' ? 'bg-yellow-100 text-yellow-800' : ''}">
-                        #{order.status}
-                    </span>
-                </h:column>
-
-                <h:column>
-                    <f:facet name="header">
-                        <span class="block px-6 py-4">Actions</span>
-                    </f:facet>
-
-                    <div class="px-6 py-4 flex gap-2">
-                        <h:form rendered="#{order.status eq 'PENDING'}">
-                            <h:commandButton value="Accept"
-                                             action="#{orderBean.acceptOrder(order.id)}"
-                                             styleClass="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition" />
-                        </h:form>
-
-                        <h:form rendered="#{order.status eq 'PENDING'}">
-                            <h:commandButton value="Reject"
-                                             action="#{orderBean.rejectOrder(order.id)}"
-                                             styleClass="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition" />
-                        </h:form>
-
-                        <span class="text-slate-500" jsf:rendered="#{order.status ne 'PENDING'}">
-                            No actions
-                        </span>
-                    </div>
-                </h:column>
-
-            </h:dataTable>
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+            const salesTableBody = document.getElementById("salesTableBody");
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) {
+                    return "";
+                }
+
+                return String(value)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            function getStatusClass(status) {
+                if (status === "APPROVED") {
+                    return "bg-green-100 text-green-700";
+                }
+
+                if (status === "REJECTED") {
+                    return "bg-red-100 text-red-700";
+                }
+
+                if (status === "PENDING") {
+                    return "bg-yellow-100 text-yellow-800";
+                }
+
+                return "bg-slate-100 text-slate-700";
+            }
+
+            function getProductName(order) {
+                if (order.productName) {
+                    return order.productName;
+                }
+
+                if (order.product && order.product.name) {
+                    return order.product.name;
+                }
+
+                return "";
+            }
+
+            function getPrice(order) {
+                if (order.price !== undefined && order.price !== null) {
+                    return order.price;
+                }
+
+                if (order.product && order.product.price !== undefined && order.product.price !== null) {
+                    return order.product.price;
+                }
+
+                return "";
+            }
+
+            function getBuyerName(order) {
+                if (order.buyer && order.buyer.username) {
+                    return order.buyer.username;
+                }
+
+                if (order.buyerUsername) {
+                    return order.buyerUsername;
+                }
+
+                return "";
+            }
+
+            function actionHtml(order) {
+                if (order.status !== "PENDING") {
+                    return '<span class="text-slate-500">No actions</span>';
+                }
+
+                return '' +
+                    '<button type="button" onclick="updateOrderStatus(' + order.id + ', \'APPROVED\')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition">' +
+                    'Accept' +
+                    '</button>' +
+                    '<button type="button" onclick="updateOrderStatus(' + order.id + ', \'REJECTED\')" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">' +
+                    'Reject' +
+                    '</button>';
+            }
+
+            async function loadSales() {
+                try {
+                    const response = await fetch(contextPath + "/api/orders/sales");
+
+                    if (!response.ok) {
+                        throw new Error("Could not load sales requests");
+                    }
+
+                    const sales = await response.json();
+
+                    if (sales.length === 0) {
+                        salesTableBody.innerHTML =
+                            '<tr>' +
+                            '<td colspan="7" class="px-6 py-8 text-center text-slate-500">' +
+                            'You have no sales requests yet.' +
+                            '</td>' +
+                            '</tr>';
+                        return;
+                    }
+
+                    salesTableBody.innerHTML = sales.map(function (order) {
+                        return '<tr class="border-b border-slate-100 hover:bg-slate-50 transition">' +
+
+                            '<td>' +
+                            '<span class="block px-6 py-4 text-slate-700 font-medium">#' +
+                            escapeHtml(order.id) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<div class="px-6 py-4">' +
+                            '<p class="font-bold text-slate-900">' +
+                            escapeHtml(getProductName(order)) +
+                            '</p>' +
+                            '<p class="text-sm text-slate-500">Marketplace item</p>' +
+                            '</div>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="block px-6 py-4 text-slate-700">' +
+                            escapeHtml(getBuyerName(order)) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="block px-6 py-4 text-slate-700">' +
+                            escapeHtml(order.contactMessage) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="block px-6 py-4 font-bold text-slate-900">€' +
+                            escapeHtml(getPrice(order)) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="inline-block mx-6 my-4 px-3 py-1 rounded-full text-sm font-semibold ' +
+                            getStatusClass(order.status) +
+                            '">' +
+                            escapeHtml(order.status) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<div class="px-6 py-4 flex gap-2">' +
+                            actionHtml(order) +
+                            '</div>' +
+                            '</td>' +
+
+                            '</tr>';
+                    }).join("");
+
+                } catch (error) {
+                    console.error(error);
+
+                    salesTableBody.innerHTML =
+                        '<tr>' +
+                        '<td colspan="7" class="px-6 py-8 text-center text-red-500">' +
+                        'Error loading sales requests.' +
+                        '</td>' +
+                        '</tr>';
+                }
+            }
+
+            async function updateOrderStatus(orderId, status) {
+                try {
+                    const response = await fetch(contextPath + "/api/orders/" + orderId + "/status", {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            status: status
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Could not update order status");
+                    }
+
+                    await loadSales();
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Could not update order status.");
+                }
+            }
+
+            loadSales();
+
+            //]]>
+        </script>
+
     </ui:define>
 
 </ui:composition>

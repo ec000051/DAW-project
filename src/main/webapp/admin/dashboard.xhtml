@@ -1,7 +1,6 @@
 <ui:composition template="/templates/main.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core">
 
     <f:metadata>
@@ -23,45 +22,35 @@
                     Admin Dashboard
                 </h1>
 
-                <p class="text-slate-600">
-                    Welcome, #{authBean.currentUser.username}. Monitor users, products, and orders from one place.
+                <p id="welcomeText" class="text-slate-600">
+                    Welcome. Monitor users, products, and orders from one place.
                 </p>
             </div>
 
-            <!-- Statistic cards -->
             <div class="grid md:grid-cols-3 gap-6 mb-8">
 
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
                     <p class="text-sm text-slate-500 font-semibold uppercase tracking-widest">Users</p>
-                    <h2 class="text-5xl font-extrabold text-slate-900 mt-3">
-                        #{adminDashboardBean.totalUsers}
-                    </h2>
+                    <h2 id="totalUsers" class="text-5xl font-extrabold text-slate-900 mt-3">0</h2>
                     <p class="text-slate-500 mt-2">Registered accounts</p>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
                     <p class="text-sm text-slate-500 font-semibold uppercase tracking-widest">Products</p>
-                    <h2 class="text-5xl font-extrabold text-slate-900 mt-3">
-                        #{adminDashboardBean.totalProducts}
-                    </h2>
+                    <h2 id="totalProducts" class="text-5xl font-extrabold text-slate-900 mt-3">0</h2>
                     <p class="text-slate-500 mt-2">Marketplace listings</p>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
                     <p class="text-sm text-slate-500 font-semibold uppercase tracking-widest">Orders</p>
-                    <h2 class="text-5xl font-extrabold text-slate-900 mt-3">
-                        #{adminDashboardBean.totalOrders}
-                    </h2>
+                    <h2 id="totalOrders" class="text-5xl font-extrabold text-slate-900 mt-3">0</h2>
                     <p class="text-slate-500 mt-2">Purchase requests</p>
                 </div>
 
             </div>
 
-            <!-- Visual analytics -->
-            <!-- Visual analytics -->
             <div class="grid lg:grid-cols-2 gap-6 mb-8">
 
-                <!-- Product category pie chart -->
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
                     <h2 class="text-2xl font-bold text-slate-900 mb-2">
                         Products by Category
@@ -73,49 +62,41 @@
 
                     <div class="flex flex-col md:flex-row items-center gap-8">
 
-                        <!-- Pie chart -->
-                        <div class="w-52 h-52 min-w-52 min-h-52 aspect-square rounded-full shadow-inner flex-shrink-0"
-                             style="background: conic-gradient(
-                    #0f172a 0% #{adminDashboardBean.electronicsPercentage}%,
-                    #475569 #{adminDashboardBean.electronicsPercentage}% #{adminDashboardBean.furnitureEndPercentage}%,
-                    #94a3b8 #{adminDashboardBean.furnitureEndPercentage}% #{adminDashboardBean.booksEndPercentage}%,
-                    #cbd5e1 #{adminDashboardBean.booksEndPercentage}% #{adminDashboardBean.accessoriesEndPercentage}%,
-                    #e2e8f0 #{adminDashboardBean.accessoriesEndPercentage}% 100%
-                 );">
+                        <div id="categoryPieChart"
+                             class="w-52 h-52 min-w-52 min-h-52 aspect-square rounded-full shadow-inner flex-shrink-0"
+                             style="background: conic-gradient(#e2e8f0 0% 100%);">
                         </div>
 
-                        <!-- Legend -->
                         <div class="space-y-3 w-full">
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-slate-700">Electronics</span>
-                                <span class="text-slate-500">#{adminDashboardBean.electronicsProducts}</span>
+                                <span id="electronicsProducts" class="text-slate-500">0</span>
                             </div>
 
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-slate-700">Furniture</span>
-                                <span class="text-slate-500">#{adminDashboardBean.furnitureProducts}</span>
+                                <span id="furnitureProducts" class="text-slate-500">0</span>
                             </div>
 
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-slate-700">Books</span>
-                                <span class="text-slate-500">#{adminDashboardBean.booksProducts}</span>
+                                <span id="booksProducts" class="text-slate-500">0</span>
                             </div>
 
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-slate-700">Accessories</span>
-                                <span class="text-slate-500">#{adminDashboardBean.accessoriesProducts}</span>
+                                <span id="accessoriesProducts" class="text-slate-500">0</span>
                             </div>
 
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-slate-700">Other</span>
-                                <span class="text-slate-500">#{adminDashboardBean.otherProducts}</span>
+                                <span id="otherProducts" class="text-slate-500">0</span>
                             </div>
                         </div>
 
                     </div>
                 </div>
 
-                <!-- Order status overview -->
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
                     <h2 class="text-2xl font-bold text-slate-900 mb-2">
                         Order Status Overview
@@ -128,23 +109,17 @@
                     <div class="grid grid-cols-3 gap-4 text-center">
 
                         <div class="bg-slate-50 rounded-2xl p-5">
-                            <p class="text-4xl font-extrabold text-slate-900">
-                                #{adminDashboardBean.pendingOrders}
-                            </p>
+                            <p id="pendingOrders" class="text-4xl font-extrabold text-slate-900">0</p>
                             <p class="text-sm text-slate-500 mt-2">Pending</p>
                         </div>
 
                         <div class="bg-slate-50 rounded-2xl p-5">
-                            <p class="text-4xl font-extrabold text-slate-900">
-                                #{adminDashboardBean.approvedOrders}
-                            </p>
+                            <p id="approvedOrders" class="text-4xl font-extrabold text-slate-900">0</p>
                             <p class="text-sm text-slate-500 mt-2">Approved</p>
                         </div>
 
                         <div class="bg-slate-50 rounded-2xl p-5">
-                            <p class="text-4xl font-extrabold text-slate-900">
-                                #{adminDashboardBean.rejectedOrders}
-                            </p>
+                            <p id="rejectedOrders" class="text-4xl font-extrabold text-slate-900">0</p>
                             <p class="text-sm text-slate-500 mt-2">Rejected</p>
                         </div>
 
@@ -153,36 +128,117 @@
 
             </div>
 
-            <!-- Quick actions -->
             <div class="grid md:grid-cols-4 gap-6">
 
-                <h:link outcome="/admin/users.xhtml"
-                        styleClass="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
+                <a href="#{request.contextPath}/admin/users.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
                     <h3 class="text-xl font-bold text-slate-900 mb-2">Manage Users</h3>
                     <p class="text-slate-600 text-sm">View registered users and contact information.</p>
-                </h:link>
+                </a>
 
-                <h:link outcome="/admin/products.xhtml"
-                        styleClass="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
+                <a href="#{request.contextPath}/admin/products.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
                     <h3 class="text-xl font-bold text-slate-900 mb-2">Manage Products</h3>
                     <p class="text-slate-600 text-sm">Review and delete marketplace products.</p>
-                </h:link>
+                </a>
 
-                <h:link outcome="/admin/orders.xhtml"
-                        styleClass="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
+                <a href="#{request.contextPath}/admin/orders.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
                     <h3 class="text-xl font-bold text-slate-900 mb-2">Manage Orders</h3>
                     <p class="text-slate-600 text-sm">Monitor purchase requests and order status.</p>
-                </h:link>
+                </a>
 
-                <h:link outcome="/admin/account.xhtml"
-                        styleClass="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
+                <a href="#{request.contextPath}/admin/account.xhtml"
+                   class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 block hover:shadow-md transition">
                     <h3 class="text-xl font-bold text-slate-900 mb-2">Admin Account</h3>
                     <p class="text-slate-600 text-sm">Edit administrator account information.</p>
-                </h:link>
+                </a>
 
             </div>
 
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+
+            function setText(id, value) {
+                document.getElementById(id).textContent = value ?? 0;
+            }
+
+            async function loadAdminUser() {
+                const response = await fetch(contextPath + "/api/users/me");
+
+                if (response.status === 401) {
+                    window.location.href = contextPath + "/login.xhtml";
+                    return;
+                }
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const user = await response.json();
+
+                if (user.role !== "ADMIN") {
+                    window.location.href = contextPath + "/index.xhtml";
+                    return;
+                }
+
+                document.getElementById("welcomeText").textContent =
+                    "Welcome, " + user.username + ". Monitor users, products, and orders from one place.";
+            }
+
+            async function loadDashboardData() {
+                try {
+                    const response = await fetch(contextPath + "/api/admin/dashboard");
+
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = contextPath + "/index.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not load dashboard data");
+                    }
+
+                    const data = await response.json();
+
+                    setText("totalUsers", data.totalUsers);
+                    setText("totalProducts", data.totalProducts);
+                    setText("totalOrders", data.totalOrders);
+
+                    setText("electronicsProducts", data.electronicsProducts);
+                    setText("furnitureProducts", data.furnitureProducts);
+                    setText("booksProducts", data.booksProducts);
+                    setText("accessoriesProducts", data.accessoriesProducts);
+                    setText("otherProducts", data.otherProducts);
+
+                    setText("pendingOrders", data.pendingOrders);
+                    setText("approvedOrders", data.approvedOrders);
+                    setText("rejectedOrders", data.rejectedOrders);
+
+                    document.getElementById("categoryPieChart").style.background =
+                        "conic-gradient(" +
+                        "#0f172a 0% " + data.electronicsPercentage + "%, " +
+                        "#475569 " + data.electronicsPercentage + "% " + data.furnitureEndPercentage + "%, " +
+                        "#94a3b8 " + data.furnitureEndPercentage + "% " + data.booksEndPercentage + "%, " +
+                        "#cbd5e1 " + data.booksEndPercentage + "% " + data.accessoriesEndPercentage + "%, " +
+                        "#e2e8f0 " + data.accessoriesEndPercentage + "% 100%" +
+                        ")";
+
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            loadAdminUser();
+            loadDashboardData();
+
+            //]]>
+
+        </script>
 
     </ui:define>
 

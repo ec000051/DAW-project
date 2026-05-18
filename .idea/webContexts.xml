@@ -5,6 +5,9 @@
       <map>
         <entry key="file://$PROJECT_DIR$/src/main/webapp/admin/dashboard.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/admin" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/index.xhtml" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/products/list.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/products" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/products/products-rest.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/products" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/profile/edit-profile.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/profile" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/templates/main.xhtml" value="file://$PROJECT_DIR$/src/main/webapp/templates" />
       </map>
     </option>

@@ -1,7 +1,6 @@
 <ui:composition template="/templates/main.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core">
 
     <f:metadata>
@@ -40,86 +39,200 @@
                     </p>
                 </div>
 
-                <h:dataTable value="#{adminUsersBean.users}"
-                             var="u"
-                             styleClass="w-full border-collapse text-left">
+                <p id="emptyUsersMessage" class="text-slate-600 hidden">
+                    No users are currently available.
+                </p>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                ID
-                            </span>
-                        </f:facet>
+                <div id="usersTableWrapper" class="overflow-x-auto">
 
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            #{u.id}
-                        </span>
-                    </h:column>
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                        <tr>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    ID
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                User
-                            </span>
-                        </f:facet>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    User
+                                </span>
+                            </th>
 
-                        <div class="border-b border-slate-100 px-4 py-3">
-                            <p class="font-semibold text-slate-900">
-                                #{u.username}
-                            </p>
-                            <p class="text-sm text-slate-500">
-                                #{u.email}
-                            </p>
-                        </div>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Bio / Contact
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Bio / Contact
-                            </span>
-                        </f:facet>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Role
+                                </span>
+                            </th>
 
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700 max-w-xs">
-                            #{empty u.bio ? 'No contact information added.' : u.bio}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Actions
+                                </span>
+                            </th>
+                        </tr>
+                        </thead>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Role
-                            </span>
-                        </f:facet>
+                        <tbody id="usersTableBody">
+                        </tbody>
+                    </table>
 
-                        <span class="inline-block my-3 mx-4 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                            #{u.role}
-                        </span>
-                    </h:column>
-
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Actions
-                            </span>
-                        </f:facet>
-
-                        <div class="border-b border-slate-100 px-4 py-3">
-                            <h:form>
-                                <h:commandButton value="Delete User"
-                                                 action="#{adminUsersBean.deleteUser(u)}"
-                                                 rendered="#{u.role eq 'USER'}"
-                                                 onclick="return confirm('Delete this user account, including their products and orders?');"
-                                                 styleClass="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition text-sm font-semibold" />
-                            </h:form>
-                        </div>
-                    </h:column>
-
-                </h:dataTable>
+                </div>
 
             </div>
 
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+
+            const usersTableBody = document.getElementById("usersTableBody");
+            const usersTableWrapper = document.getElementById("usersTableWrapper");
+            const emptyUsersMessage = document.getElementById("emptyUsersMessage");
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) {
+                    return "";
+                }
+
+                return String(value)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            function renderUsers(users) {
+                if (!users || users.length === 0) {
+                    usersTableWrapper.classList.add("hidden");
+                    emptyUsersMessage.classList.remove("hidden");
+                    return;
+                }
+
+                usersTableWrapper.classList.remove("hidden");
+                emptyUsersMessage.classList.add("hidden");
+
+                usersTableBody.innerHTML = users.map(function (user) {
+                    const bioText =
+                        user.bio && user.bio.trim() !== ""
+                            ? user.bio
+                            : "No contact information added.";
+
+                    const deleteButton =
+                        user.role === "USER"
+                            ? '<button type="button" onclick="deleteUser(' + user.id + ')" ' +
+                            'class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition text-sm font-semibold">' +
+                            'Delete User' +
+                            '</button>'
+                            : "";
+
+                    return '<tr>' +
+
+                        '<td>' +
+                        '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                        escapeHtml(user.id) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<div class="border-b border-slate-100 px-4 py-3">' +
+                        '<p class="font-semibold text-slate-900">' +
+                        escapeHtml(user.username) +
+                        '</p>' +
+                        '<p class="text-sm text-slate-500">' +
+                        escapeHtml(user.email) +
+                        '</p>' +
+                        '</div>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700 max-w-xs">' +
+                        escapeHtml(bioText) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<span class="inline-block my-3 mx-4 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">' +
+                        escapeHtml(user.role) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<div class="border-b border-slate-100 px-4 py-3">' +
+                        deleteButton +
+                        '</div>' +
+                        '</td>' +
+
+                        '</tr>';
+                }).join("");
+            }
+
+            async function loadUsers() {
+                try {
+                    const response = await fetch(contextPath + "/api/admin/users");
+
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = contextPath + "/index.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not load users");
+                    }
+
+                    const users = await response.json();
+                    renderUsers(users);
+
+                } catch (error) {
+                    console.error(error);
+                    usersTableWrapper.classList.add("hidden");
+                    emptyUsersMessage.classList.remove("hidden");
+                    emptyUsersMessage.textContent = "Error loading users.";
+                }
+            }
+
+            async function deleteUser(id) {
+                if (!confirm("Delete this user account, including their products and orders?")) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(contextPath + "/api/admin/users/" + id, {
+                        method: "DELETE"
+                    });
+
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = contextPath + "/index.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not delete user");
+                    }
+
+                    await loadUsers();
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Error deleting user.");
+                }
+            }
+
+            loadUsers();
+
+            //]]>
+
+        </script>
 
     </ui:define>
 </ui:composition>

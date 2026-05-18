@@ -1,7 +1,6 @@
 <ui:composition template="/templates/main.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core">
 
     <f:metadata>
@@ -40,104 +39,206 @@
                     </p>
                 </div>
 
-                <h:panelGroup rendered="#{empty orderBean.allOrders}">
-                    <p class="text-slate-600">
-                        No orders are currently available in the marketplace.
-                    </p>
-                </h:panelGroup>
+                <p id="emptyOrdersMessage" class="text-slate-600 hidden">
+                    No orders are currently available in the marketplace.
+                </p>
 
-                <h:dataTable value="#{orderBean.allOrders}"
-                             var="o"
-                             rendered="#{not empty orderBean.allOrders}"
-                             styleClass="w-full border-collapse text-left">
+                <div id="ordersTableWrapper" class="overflow-x-auto">
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                        <tr>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    ID
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                ID
-                            </span>
-                        </f:facet>
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            #{o.id}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Product
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Product
-                            </span>
-                        </f:facet>
-                        <span class="block border-b border-slate-100 px-4 py-3 font-semibold text-slate-900">
-                            #{o.product.name}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Buyer
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Buyer
-                            </span>
-                        </f:facet>
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            #{o.buyer.username}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Seller
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Seller
-                            </span>
-                        </f:facet>
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            #{o.seller.username}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Message
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Message
-                            </span>
-                        </f:facet>
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            #{o.contactMessage}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Status
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Status
-                            </span>
-                        </f:facet>
-                        <span class="inline-block my-3 mx-4 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                            #{o.status}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Actions
+                                </span>
+                            </th>
+                        </tr>
+                        </thead>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Actions
-                            </span>
-                        </f:facet>
-
-                        <div class="border-b border-slate-100 px-4 py-3">
-                            <h:form>
-                                <h:commandButton value="Delete"
-                                                 action="#{orderBean.adminDelete(o.id)}"
-                                                 styleClass="px-4 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition text-sm font-semibold" />
-                            </h:form>
-                        </div>
-                    </h:column>
-
-                </h:dataTable>
+                        <tbody id="ordersTableBody">
+                        </tbody>
+                    </table>
+                </div>
 
             </div>
 
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+            const ordersTableBody = document.getElementById("ordersTableBody");
+            const ordersTableWrapper = document.getElementById("ordersTableWrapper");
+            const emptyOrdersMessage = document.getElementById("emptyOrdersMessage");
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) {
+                    return "";
+                }
+
+                return String(value)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            function renderOrders(orders) {
+                if (!orders || orders.length === 0) {
+                    ordersTableWrapper.classList.add("hidden");
+                    emptyOrdersMessage.classList.remove("hidden");
+                    return;
+                }
+
+                ordersTableWrapper.classList.remove("hidden");
+                emptyOrdersMessage.classList.add("hidden");
+
+                ordersTableBody.innerHTML = orders.map(function (order) {
+                    return '<tr>' +
+
+                        '<td>' +
+                        '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                        escapeHtml(order.id) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<span class="block border-b border-slate-100 px-4 py-3 font-semibold text-slate-900">' +
+                        escapeHtml(order.productName) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                        escapeHtml(order.buyerUsername) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                        escapeHtml(order.sellerUsername) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                        escapeHtml(order.contactMessage) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<span class="inline-block my-3 mx-4 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">' +
+                        escapeHtml(order.status) +
+                        '</span>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '<div class="border-b border-slate-100 px-4 py-3">' +
+                        '<button type="button" onclick="deleteOrder(' + order.id + ')" ' +
+                        'class="px-4 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition text-sm font-semibold">' +
+                        'Delete' +
+                        '</button>' +
+                        '</div>' +
+                        '</td>' +
+
+                        '</tr>';
+                }).join("");
+            }
+
+            async function loadOrders() {
+                try {
+                    const response = await fetch(contextPath + "/api/admin/orders");
+
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = contextPath + "/index.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not load orders");
+                    }
+
+                    const orders = await response.json();
+                    renderOrders(orders);
+
+                } catch (error) {
+                    console.error(error);
+                    ordersTableWrapper.classList.add("hidden");
+                    emptyOrdersMessage.classList.remove("hidden");
+                    emptyOrdersMessage.textContent = "Error loading orders.";
+                }
+            }
+
+            async function deleteOrder(id) {
+                if (!confirm("Are you sure you want to delete this order?")) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(contextPath + "/api/admin/orders/" + id, {
+                        method: "DELETE"
+                    });
+
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = contextPath + "/index.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not delete order");
+                    }
+
+                    await loadOrders();
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Error deleting order.");
+                }
+            }
+
+            loadOrders();
+
+            //]]>
+
+        </script>
 
     </ui:define>
 

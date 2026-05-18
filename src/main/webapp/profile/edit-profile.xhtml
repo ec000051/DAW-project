@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core"
-                xmlns:pt="jakarta.faces.passthrough"
                 template="/templates/main.xhtml">
 
     <f:metadata>
@@ -11,8 +9,6 @@
     </f:metadata>
 
     <ui:define name="title">Edit Profile</ui:define>
-
-
 
     <ui:define name="content">
         <div class="flex items-center gap-3 mb-8">
@@ -33,48 +29,62 @@
             </div>
 
             <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
-                <h:form styleClass="space-y-5">
+
+                <form id="editProfileForm" class="space-y-5">
+
+                    <div id="messageBox" class="hidden rounded-xl px-4 py-3 text-sm font-semibold"></div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-2">Username</label>
-                        <h:inputText value="#{authBean.currentUser.username}"
-                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                        <input id="usernameInput"
+                               type="text"
+                               class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-2">Email / Contact</label>
-                        <h:inputText value="#{authBean.currentUser.email}"
-                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                        <input id="emailInput"
+                               type="text"
+                               class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-2">Profile Image URL</label>
-                        <h:inputText value="#{authBean.currentUser.profileImage}"
-                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                     pt:placeholder="https://example.com/profile.jpg" />
+                        <input id="profileImageInput"
+                               type="text"
+                               placeholder="https://example.com/profile.jpg"
+                               class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-2">Bio / Contact Info</label>
-                        <h:inputTextarea value="#{authBean.currentUser.bio}"
-                                         rows="5"
-                                         styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                         pt:placeholder="Example: Contact me by WhatsApp or email. I usually respond in the afternoon." />
+                        <textarea id="bioInput"
+                                  rows="5"
+                                  placeholder="Example: Contact me by WhatsApp or email. I usually respond in the afternoon."
+                                  class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">New Password</label>
+                        <input id="passwordInput"
+                               type="password"
+                               placeholder="Leave empty if you do not want to change it"
+                               class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
                     </div>
 
                     <div class="flex gap-3 pt-2">
-                        <h:commandButton value="Save Changes"
-                                         action="#{authBean.updateProfile}"
-                                         styleClass="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition font-semibold" />
+                        <button type="submit"
+                                class="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition font-semibold">
+                            Save Changes
+                        </button>
 
-                        <a href="#{request.contextPath}/profile/profile.xhtml?id=#{authBean.currentUser.id}"
+                        <a href="#{request.contextPath}/profile/profile.xhtml"
                            class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition">
                             Cancel
                         </a>
                     </div>
 
-                    <div class="border-t border-slate-200 pt-6 mt-6"
-                         x-data="{ openDeleteModal: false }">
+                    <div class="border-t border-slate-200 pt-6 mt-6">
 
                         <button type="button"
                                 onclick="document.getElementById('deleteAccountModal').classList.remove('hidden')"
@@ -101,17 +111,116 @@
                                         Cancel
                                     </button>
 
-                                    <h:commandButton value="Yes, Delete Account"
-                                                     action="#{authBean.deleteMyAccount}"
-                                                     styleClass="bg-red-600 text-white px-5 py-3 rounded-xl hover:bg-red-700 transition font-semibold" />
+                                    <button type="button"
+                                            onclick="showMessage('Delete account is still using the old JSF action. We can convert it after adding DELETE /api/users/me.', 'error')"
+                                            class="bg-red-600 text-white px-5 py-3 rounded-xl hover:bg-red-700 transition font-semibold">
+                                        Yes, Delete Account
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                </h:form>
+                </form>
             </div>
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+
+            const editProfileForm = document.getElementById("editProfileForm");
+            const usernameInput = document.getElementById("usernameInput");
+            const emailInput = document.getElementById("emailInput");
+            const profileImageInput = document.getElementById("profileImageInput");
+            const bioInput = document.getElementById("bioInput");
+            const passwordInput = document.getElementById("passwordInput");
+            const messageBox = document.getElementById("messageBox");
+
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.classList.remove("hidden");
+
+                if (type === "success") {
+                    messageBox.className = "rounded-xl px-4 py-3 text-sm font-semibold bg-green-100 text-green-700";
+                } else {
+                    messageBox.className = "rounded-xl px-4 py-3 text-sm font-semibold bg-red-100 text-red-700";
+                }
+            }
+
+            async function loadMyProfileForEdit() {
+                try {
+                    const response = await fetch(contextPath + "/api/users/me");
+
+                    if (response.status === 401) {
+                        window.location.href = contextPath + "/login.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not load profile");
+                    }
+
+                    const user = await response.json();
+
+                    usernameInput.value = user.username || "";
+                    emailInput.value = user.email || "";
+                    profileImageInput.value = user.profileImage || "";
+                    bioInput.value = user.bio || "";
+
+                } catch (error) {
+                    console.error(error);
+                    showMessage("Error loading profile information.", "error");
+                }
+            }
+
+            editProfileForm.addEventListener("submit", async function (event) {
+                event.preventDefault();
+
+                const updatedUser = {
+                    username: usernameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    profileImage: profileImageInput.value.trim(),
+                    bio: bioInput.value.trim(),
+                    password: passwordInput.value.trim()
+                };
+
+                try {
+                    const response = await fetch(contextPath + "/api/users/me", {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(updatedUser)
+                    });
+
+                    if (response.status === 401) {
+                        window.location.href = contextPath + "/login.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not update profile");
+                    }
+
+                    showMessage("Profile updated successfully.", "success");
+
+                    setTimeout(function () {
+                        window.location.href = contextPath + "/profile/profile.xhtml";
+                    }, 700);
+
+                } catch (error) {
+                    console.error(error);
+                    showMessage("Error saving profile changes.", "error");
+                }
+            });
+
+            loadMyProfileForEdit();
+
+            //]]>
+        </script>
+
     </ui:define>
 
 </ui:composition>

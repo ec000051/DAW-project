@@ -36,6 +36,11 @@ public class AuthBean implements Serializable {
         if (user != null) {
             currentUser = user;
 
+            FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .getSessionMap()
+                    .put("currentUser", currentUser);
+
             if (isAdmin()) {
                 return "/admin/dashboard.xhtml?faces-redirect=true";
             }
@@ -66,6 +71,11 @@ public class AuthBean implements Serializable {
 
         currentUser = newUser;
 
+        FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .put("currentUser", currentUser);
+
         username = null;
         password = null;
         email = null;
@@ -74,10 +84,17 @@ public class AuthBean implements Serializable {
     }
 
     public String logout() {
+
+        FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .remove("currentUser");
+
         currentUser = null;
         username = null;
         password = null;
         email = null;
+
         return "/index.xhtml?faces-redirect=true";
     }
 

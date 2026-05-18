@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
 
     <ui:define name="title">Create Product</ui:define>
-
-
 
     <ui:define name="content">
 
@@ -22,83 +19,230 @@
         </div>
 
         <section class="max-w-3xl mx-auto">
+
             <div class="mb-8">
-                <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">Seller Panel</p>
-                <h1 class="text-4xl font-extrabold text-slate-900 mb-3">Create Product</h1>
-                <p class="text-slate-600">Add a new product to your marketplace listings.</p>
+                <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">
+                    Seller Panel
+                </p>
+
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-3">
+                    Create Product
+                </h1>
+
+                <p class="text-slate-600">
+                    Add a new product to your marketplace listings.
+                </p>
             </div>
 
             <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
-                <h:form styleClass="space-y-5">
+
+                <form id="createProductForm" class="space-y-5">
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Name</label>
-                        <h:inputText value="#{productBean.product.name}"
-                                     required="true"
-                                     requiredMessage="Name is required"
-                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Name
+                        </label>
+
+                        <input type="text"
+                               id="name"
+                               class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Price</label>
-                        <h:inputText id="price"
-                                     value="#{productBean.product.price}"
-                                     required="true"
-                                     requiredMessage="Price is required."
-                                     converterMessage="Price must be a valid number."
-                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900">
-                            <f:validateDoubleRange minimum="0.01" minimumMessage="Price must be greater than 0." />
-                        </h:inputText>
-                        <h:message for="price" styleClass="text-red-500 text-sm mt-2 block" />
+
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Price
+                        </label>
+
+                        <input type="number"
+                               step="0.01"
+                               id="price"
+                               class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Image URL</label>
-                        <h:inputText value="#{productBean.product.imageUrl}"
-                                     styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Image URL
+                        </label>
+
+                        <input type="text"
+                               id="imageUrl"
+                               class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Status</label>
-                        <h:selectOneMenu value="#{productBean.product.status}"
-                                         styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900">
-                            <f:selectItem itemValue="AVAILABLE" itemLabel="Available" />
-                            <f:selectItem itemValue="UNAVAILABLE" itemLabel="Unavailable" />
-                        </h:selectOneMenu>
+
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Status
+                        </label>
+
+                        <select id="status"
+                                class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900">
+
+                            <option value="AVAILABLE">
+                                Available
+                            </option>
+
+                            <option value="UNAVAILABLE">
+                                Unavailable
+                            </option>
+
+                        </select>
+
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Category</label>
-                        <h:selectOneMenu value="#{productBean.product.category}"
-                                         styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900">
-                            <f:selectItem itemValue="Electronics" itemLabel="Electronics" />
-                            <f:selectItem itemValue="Furniture" itemLabel="Furniture" />
-                            <f:selectItem itemValue="Books" itemLabel="Books" />
-                            <f:selectItem itemValue="Accessories" itemLabel="Accessories" />
-                            <f:selectItem itemValue="Other" itemLabel="Other" />
-                        </h:selectOneMenu>
+
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Category
+                        </label>
+
+                        <select id="category"
+                                class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900">
+
+                            <option value="Electronics">Electronics</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Books">Books</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Other">Other</option>
+
+                        </select>
+
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Description</label>
-                        <h:inputTextarea value="#{productBean.product.description}"
-                                         rows="5"
-                                         styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Description
+                        </label>
+
+                        <textarea id="description"
+                                  rows="5"
+                                  class="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"></textarea>
+
                     </div>
 
                     <div class="flex gap-3 pt-2">
-                        <h:commandButton value="Save Product"
-                                         action="#{productBean.create}"
-                                         styleClass="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 cursor-pointer transition font-semibold" />
 
-                        <h:link value="Back to List"
-                                outcome="/products/list.xhtml"
-                                styleClass="inline-block bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition" />
+                        <button type="submit"
+                                class="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 cursor-pointer transition font-semibold">
+                            Save Product
+                        </button>
+
+                        <a href="#{request.contextPath}/products/list.xhtml"
+                           class="inline-block bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition">
+                            Back to List
+                        </a>
+
                     </div>
 
-                </h:form>
+                </form>
+
             </div>
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+
+            const form = document.getElementById("createProductForm");
+
+            form.addEventListener("submit", async function (event) {
+
+                event.preventDefault();
+
+                const name = document.getElementById("name");
+                const price = document.getElementById("price");
+                const imageUrl = document.getElementById("imageUrl");
+                const status = document.getElementById("status");
+                const category = document.getElementById("category");
+                const description = document.getElementById("description");
+
+                if (name.value.trim().length < 3) {
+
+                    alert("Product name must contain at least 3 characters.");
+                    name.focus();
+                    return;
+                }
+
+                if (price.value === "" || isNaN(price.value)) {
+
+                    alert("Price must be a valid number.");
+                    price.focus();
+                    return;
+                }
+
+                if (Number(price.value) <= 0) {
+
+                    alert("Price must be greater than 0.");
+                    price.focus();
+                    return;
+                }
+
+                if (imageUrl.value.trim() !== "" &&
+                    !imageUrl.value.startsWith("http")) {
+
+                    alert("Image URL must start with http or https.");
+                    imageUrl.focus();
+                    return;
+                }
+
+                if (description.value.trim().length < 10) {
+
+                    alert("Description must contain at least 10 characters.");
+                    description.focus();
+                    return;
+                }
+
+                const productData = {
+
+                    name: name.value,
+                    price: Number(price.value),
+                    imageUrl: imageUrl.value,
+                    status: status.value,
+                    category: category.value,
+                    description: description.value
+                };
+
+                try {
+
+                    const response = await fetch(
+                        contextPath + "/api/products",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            body: JSON.stringify(productData)
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error("Could not create product");
+                    }
+
+                    window.location.href =
+                        contextPath + "/products/list.xhtml";
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert("Error creating product.");
+                }
+            });
+
+            //]]>
+        </script>
+
     </ui:define>
 
 </ui:composition>

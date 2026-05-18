@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
 
@@ -10,7 +9,6 @@
     </f:metadata>
 
     <ui:define name="title">Admin Account</ui:define>
-
 
     <ui:define name="content">
 
@@ -30,15 +28,15 @@
 
         <section class="grid md:grid-cols-3 gap-6">
 
-            <!-- Left profile card -->
             <div class="md:col-span-1 bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
 
-                <div class="w-24 h-24 rounded-full bg-slate-900 text-white flex items-center justify-center text-3xl font-extrabold mb-5">
-                    #{authBean.currentUser.username.substring(0,1).toUpperCase()}
+                <div id="adminAvatar"
+                     class="w-24 h-24 rounded-full bg-slate-900 text-white flex items-center justify-center text-3xl font-extrabold mb-5">
+                    ?
                 </div>
 
-                <h2 class="text-2xl font-bold text-slate-900">
-                    #{authBean.currentUser.username}
+                <h2 id="adminUsernameCard" class="text-2xl font-bold text-slate-900">
+                    Loading...
                 </h2>
 
                 <p class="text-slate-500 mt-1">
@@ -47,7 +45,6 @@
 
             </div>
 
-            <!-- Right info card -->
             <div class="md:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
 
                 <h2 class="text-xl font-bold text-slate-900 mb-5">
@@ -58,22 +55,22 @@
 
                     <div>
                         <p class="text-sm text-slate-500">Username</p>
-                        <p class="font-semibold text-slate-900">
-                            #{authBean.currentUser.username}
+                        <p id="adminUsernameInfo" class="font-semibold text-slate-900">
+                            Loading...
                         </p>
                     </div>
 
                     <div>
                         <p class="text-sm text-slate-500">Email</p>
-                        <p class="font-semibold text-slate-900">
-                            #{authBean.currentUser.email}
+                        <p id="adminEmailInfo" class="font-semibold text-slate-900">
+                            Loading...
                         </p>
                     </div>
 
                     <div>
                         <p class="text-sm text-slate-500">Role</p>
-                        <p class="font-semibold text-slate-900">
-                            #{authBean.currentUser.role}
+                        <p id="adminRoleInfo" class="font-semibold text-slate-900">
+                            Loading...
                         </p>
                     </div>
 
@@ -83,7 +80,6 @@
 
         </section>
 
-        <!-- Quick actions -->
         <section class="mt-8">
 
             <h2 class="text-2xl font-extrabold text-slate-900 mb-4">
@@ -143,6 +139,72 @@
             </div>
 
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+
+            const adminAvatar = document.getElementById("adminAvatar");
+            const adminUsernameCard = document.getElementById("adminUsernameCard");
+            const adminUsernameInfo = document.getElementById("adminUsernameInfo");
+            const adminEmailInfo = document.getElementById("adminEmailInfo");
+            const adminRoleInfo = document.getElementById("adminRoleInfo");
+
+            function renderAdminAvatar(user) {
+                if (user.profileImage && user.profileImage.trim() !== "") {
+                    adminAvatar.className = "w-24 h-24 rounded-full overflow-hidden mb-5";
+                    adminAvatar.innerHTML =
+                        '<img src="' + user.profileImage + '" alt="Admin profile image" class="w-full h-full object-cover" />';
+                    return;
+                }
+
+                adminAvatar.textContent =
+                    user.username ? user.username.substring(0, 1).toUpperCase() : "?";
+            }
+
+            async function loadAdminAccount() {
+                try {
+                    const response = await fetch(contextPath + "/api/users/me");
+
+                    if (response.status === 401) {
+                        window.location.href = contextPath + "/login.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not load admin account");
+                    }
+
+                    const user = await response.json();
+
+                    if (user.role !== "ADMIN") {
+                        window.location.href = contextPath + "/index.xhtml";
+                        return;
+                    }
+
+                    adminUsernameCard.textContent = user.username || "";
+                    adminUsernameInfo.textContent = user.username || "";
+                    adminEmailInfo.textContent = user.email || "";
+                    adminRoleInfo.textContent = user.role || "";
+
+                    renderAdminAvatar(user);
+
+                } catch (error) {
+                    console.error(error);
+
+                    adminUsernameCard.textContent = "Error loading account";
+                    adminUsernameInfo.textContent = "Error";
+                    adminEmailInfo.textContent = "Error";
+                    adminRoleInfo.textContent = "Error";
+                }
+            }
+
+            loadAdminAccount();
+
+            //]]>
+
+        </script>
 
     </ui:define>
 

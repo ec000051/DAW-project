@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
 
@@ -13,7 +12,6 @@
 
     <ui:define name="content">
 
-        <!-- Header -->
         <section class="mb-8">
             <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">
                 Account
@@ -28,35 +26,25 @@
             </p>
         </section>
 
-        <!-- Profile layout -->
         <section class="grid md:grid-cols-3 gap-6">
 
-            <!-- Left profile card -->
             <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8 text-center flex flex-col items-center self-start">
 
-                <!-- Profile image -->
-                <h:graphicImage value="#{authBean.currentUser.profileImage}"
-                                rendered="#{not empty authBean.currentUser.profileImage}"
-                                styleClass="w-28 h-28 rounded-full object-cover mb-6 ring-4 ring-slate-100" />
+                <div id="profileAvatar"
+                     class="w-28 h-28 rounded-full bg-slate-900 text-white flex items-center justify-center text-4xl font-extrabold mb-6 ring-4 ring-slate-100">
+                    ?
+                </div>
 
-                <!-- Default avatar -->
-                <h:panelGroup rendered="#{empty authBean.currentUser.profileImage}"
-                              layout="block"
-                              styleClass="w-28 h-28 rounded-full bg-slate-900 text-white flex items-center justify-center text-4xl font-extrabold mb-6 ring-4 ring-slate-100">
-                    #{authBean.currentUser.username.substring(0,1).toUpperCase()}
-                </h:panelGroup>
-
-                <h2 class="text-2xl font-extrabold text-slate-900">
-                    #{authBean.currentUser.username}
+                <h2 id="profileUsernameCard" class="text-2xl font-extrabold text-slate-900">
+                    Loading...
                 </h2>
 
-                <p class="text-slate-500 mt-2 uppercase tracking-wide text-sm">
-                    #{authBean.currentUser.role}
+                <p id="profileRoleCard" class="text-slate-500 mt-2 uppercase tracking-wide text-sm">
+                    Loading...
                 </p>
 
             </div>
 
-            <!-- Right details card -->
             <div class="md:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
 
                 <div class="flex items-center justify-between mb-6">
@@ -78,38 +66,33 @@
 
                 <div class="grid md:grid-cols-2 gap-5">
 
-                    <!-- Username -->
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
                         <p class="text-sm text-slate-500 mb-1">
                             Username
                         </p>
 
-                        <p class="font-bold text-slate-900">
-                            #{authBean.currentUser.username}
+                        <p id="profileUsernameInfo" class="font-bold text-slate-900">
+                            Loading...
                         </p>
                     </div>
 
-                    <!-- Email -->
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
                         <p class="text-sm text-slate-500 mb-1">
                             Email
                         </p>
 
-                        <p class="font-bold text-slate-900 break-all">
-                            #{authBean.currentUser.email}
+                        <p id="profileEmailInfo" class="font-bold text-slate-900 break-all">
+                            Loading...
                         </p>
                     </div>
 
-                    <!-- Contact info -->
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 md:col-span-2">
                         <p class="text-sm text-slate-500 mb-1">
                             Contact Information
                         </p>
 
-                        <p class="font-bold text-slate-900 leading-relaxed">
-                            #{empty authBean.currentUser.bio
-                                    ? 'No contact information added yet.'
-                                    : authBean.currentUser.bio}
+                        <p id="profileBioInfo" class="font-bold text-slate-900 leading-relaxed">
+                            Loading...
                         </p>
                     </div>
 
@@ -119,7 +102,6 @@
 
         </section>
 
-        <!-- Quick actions -->
         <section class="mt-10">
 
             <div class="mb-5">
@@ -185,6 +167,90 @@
             </div>
 
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+
+            const profileAvatar = document.getElementById("profileAvatar");
+            const profileUsernameCard = document.getElementById("profileUsernameCard");
+            const profileRoleCard = document.getElementById("profileRoleCard");
+            const profileUsernameInfo = document.getElementById("profileUsernameInfo");
+            const profileEmailInfo = document.getElementById("profileEmailInfo");
+            const profileBioInfo = document.getElementById("profileBioInfo");
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) {
+                    return "";
+                }
+
+                return String(value)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            function renderProfileAvatar(user) {
+                if (user.profileImage && user.profileImage.trim() !== "") {
+                    profileAvatar.className =
+                        "w-28 h-28 rounded-full overflow-hidden mb-6 ring-4 ring-slate-100";
+
+                    profileAvatar.innerHTML =
+                        '<img src="' + escapeHtml(user.profileImage) + '" alt="Profile image" class="w-full h-full object-cover" />';
+                    return;
+                }
+
+                profileAvatar.className =
+                    "w-28 h-28 rounded-full bg-slate-900 text-white flex items-center justify-center text-4xl font-extrabold mb-6 ring-4 ring-slate-100";
+
+                profileAvatar.textContent =
+                    user.username ? user.username.substring(0, 1).toUpperCase() : "?";
+            }
+
+            async function loadMyProfile() {
+                try {
+                    const response = await fetch(contextPath + "/api/users/me");
+
+                    if (response.status === 401) {
+                        window.location.href = contextPath + "/login.xhtml";
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not load profile");
+                    }
+
+                    const user = await response.json();
+
+                    profileUsernameCard.textContent = user.username || "";
+                    profileRoleCard.textContent = user.role || "";
+                    profileUsernameInfo.textContent = user.username || "";
+                    profileEmailInfo.textContent = user.email || "";
+                    profileBioInfo.textContent =
+                        user.bio && user.bio.trim() !== ""
+                            ? user.bio
+                            : "No contact information added yet.";
+
+                    renderProfileAvatar(user);
+
+                } catch (error) {
+                    console.error(error);
+
+                    profileUsernameCard.textContent = "Error loading profile";
+                    profileRoleCard.textContent = "";
+                    profileUsernameInfo.textContent = "Error";
+                    profileEmailInfo.textContent = "Error";
+                    profileBioInfo.textContent = "Please try again.";
+                }
+            }
+
+            loadMyProfile();
+
+            //]]>
+        </script>
 
     </ui:define>
 

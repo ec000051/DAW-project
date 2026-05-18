@@ -1,7 +1,6 @@
 <ui:composition template="/templates/main.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core">
 
     <f:metadata>
@@ -40,132 +39,286 @@
                     </p>
                 </div>
 
-                <h:panelGroup rendered="#{empty productBean.allProducts}">
-                    <p class="text-slate-600">
-                        No products are currently available in the marketplace.
-                    </p>
-                </h:panelGroup>
+                <p id="emptyProductsMessage" class="text-slate-600 hidden">
+                    No products are currently available in the marketplace.
+                </p>
 
-                <h:dataTable value="#{productBean.allProducts}"
-                             var="p"
-                             rendered="#{not empty productBean.allProducts}"
-                             styleClass="w-full border-collapse text-left">
+                <div id="productsTableWrapper" class="overflow-x-auto">
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                ID
-                            </span>
-                        </f:facet>
+                    <table class="w-full border-collapse text-left">
 
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            #{p.id}
-                        </span>
-                    </h:column>
+                        <thead>
 
-                    <h:column>
-                        <f:facet name="header">
-        <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-            Image
-        </span>
-                        </f:facet>
+                        <tr>
 
-                        <div class="border-b border-slate-100 px-4 py-3">
-                            <div class="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
-                                <h:graphicImage value="#{p.imageUrl}"
-                                                rendered="#{not empty p.imageUrl}"
-                                                styleClass="w-full h-full object-cover" />
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    ID
+                                </span>
+                            </th>
 
-                                <h:panelGroup rendered="#{empty p.imageUrl}"
-                                              layout="block"
-                                              styleClass="text-xs text-slate-400 text-center px-2">
-                                    No image
-                                </h:panelGroup>
-                            </div>
-                        </div>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Image
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Product
-                            </span>
-                        </f:facet>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Product
+                                </span>
+                            </th>
 
-                        <span class="block border-b border-slate-100 px-4 py-3 font-semibold text-slate-900">
-                            #{p.name}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Seller
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Seller
-                            </span>
-                        </f:facet>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Category
+                                </span>
+                            </th>
 
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            #{p.owner.username}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Price
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Category
-                            </span>
-                        </f:facet>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Status
+                                </span>
+                            </th>
 
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            #{p.category}
-                        </span>
-                    </h:column>
+                            <th>
+                                <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
+                                    Actions
+                                </span>
+                            </th>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Price
-                            </span>
-                        </f:facet>
+                        </tr>
 
-                        <span class="block border-b border-slate-100 px-4 py-3 text-slate-700">
-                            €#{p.price}
-                        </span>
-                    </h:column>
+                        </thead>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Status
-                            </span>
-                        </f:facet>
+                        <tbody id="productsTableBody">
 
-                        <span class="inline-block my-3 mx-4 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                            #{p.status}
-                        </span>
-                    </h:column>
+                        </tbody>
 
-                    <h:column>
-                        <f:facet name="header">
-                            <span class="block border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">
-                                Actions
-                            </span>
-                        </f:facet>
+                    </table>
 
-                        <div class="border-b border-slate-100 px-4 py-3">
-                            <h:form>
-                                <h:commandButton value="Delete"
-                                                 action="#{productBean.adminDelete(p.id)}"
-                                                 styleClass="px-4 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition text-sm font-semibold" />
-                            </h:form>
-                        </div>
-                    </h:column>
-
-                </h:dataTable>
+                </div>
 
             </div>
 
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+
+            const productsTableBody =
+                document.getElementById("productsTableBody");
+
+            const productsTableWrapper =
+                document.getElementById("productsTableWrapper");
+
+            const emptyProductsMessage =
+                document.getElementById("emptyProductsMessage");
+
+            function escapeHtml(value) {
+
+                if (value === null || value === undefined) {
+                    return "";
+                }
+
+                return String(value)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            function renderProductImage(product) {
+
+                if (product.imageUrl &&
+                    product.imageUrl.trim() !== "") {
+
+                    return '<img src="' +
+                        escapeHtml(product.imageUrl) +
+                        '" class="w-full h-full object-cover" />';
+                }
+
+                return '<div class="text-xs text-slate-400 text-center px-2">' +
+                    'No image' +
+                    '</div>';
+            }
+
+            function renderProducts(products) {
+
+                if (!products || products.length === 0) {
+
+                    productsTableWrapper.classList.add("hidden");
+
+                    emptyProductsMessage.classList.remove("hidden");
+
+                    return;
+                }
+
+                productsTableWrapper.classList.remove("hidden");
+
+                emptyProductsMessage.classList.add("hidden");
+
+                productsTableBody.innerHTML =
+                    products.map(function(product) {
+
+                        return '<tr>' +
+
+                            '<td>' +
+                            '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                            escapeHtml(product.id) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<div class="border-b border-slate-100 px-4 py-3">' +
+                            '<div class="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">' +
+                            renderProductImage(product) +
+                            '</div>' +
+                            '</div>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="block border-b border-slate-100 px-4 py-3 font-semibold text-slate-900">' +
+                            escapeHtml(product.name) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                            escapeHtml(product.ownerUsername) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                            escapeHtml(product.category) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="block border-b border-slate-100 px-4 py-3 text-slate-700">' +
+                            '€' + escapeHtml(product.price) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<span class="inline-block my-3 mx-4 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">' +
+                            escapeHtml(product.status) +
+                            '</span>' +
+                            '</td>' +
+
+                            '<td>' +
+                            '<div class="border-b border-slate-100 px-4 py-3">' +
+                            '<button type="button" onclick="deleteProduct(' + product.id + ')" ' +
+                            'class="px-4 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition text-sm font-semibold">' +
+                            'Delete' +
+                            '</button>' +
+                            '</div>' +
+                            '</td>' +
+
+                            '</tr>';
+
+                    }).join("");
+            }
+
+            async function loadProducts() {
+
+                try {
+
+                    const response = await fetch(
+                        contextPath + "/api/admin/products"
+                    );
+
+                    if (response.status === 401 ||
+                        response.status === 403) {
+
+                        window.location.href =
+                            contextPath + "/index.xhtml";
+
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not load products");
+                    }
+
+                    const products = await response.json();
+
+                    renderProducts(products);
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    productsTableWrapper.classList.add("hidden");
+
+                    emptyProductsMessage.classList.remove("hidden");
+
+                    emptyProductsMessage.textContent =
+                        "Error loading products.";
+                }
+            }
+
+            async function deleteProduct(id) {
+
+                if (!confirm(
+                    "Are you sure you want to delete this product?"
+                )) {
+                    return;
+                }
+
+                try {
+
+                    const response = await fetch(
+                        contextPath + "/api/admin/products/" + id,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+                    if (response.status === 401 ||
+                        response.status === 403) {
+
+                        window.location.href =
+                            contextPath + "/index.xhtml";
+
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Could not delete product");
+                    }
+
+                    await loadProducts();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert("Error deleting product.");
+                }
+            }
+
+            loadProducts();
+
+            //]]>
+
+        </script>
 
     </ui:define>
 

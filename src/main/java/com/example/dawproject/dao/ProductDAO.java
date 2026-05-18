@@ -18,6 +18,25 @@ public class ProductDAO {
                 .getResultList();
     }
 
+    public Product findById(Long id) {
+        return em.find(Product.class, id);
+    }
+
+    public void create(Product product) {
+        em.persist(product);
+    }
+
+    public Product update(Product product) {
+        return em.merge(product);
+    }
+
+    public void delete(Long id) {
+        Product product = findById(id);
+        if (product != null) {
+            em.remove(product);
+        }
+    }
+
     public List<Product> findByOwner(User owner) {
         return em.createQuery(
                         "SELECT p FROM Product p WHERE p.owner = :owner",
@@ -33,25 +52,6 @@ public class ProductDAO {
         for (Product product : products) {
             Product managedProduct = em.merge(product);
             em.remove(managedProduct);
-        }
-    }
-
-    public void create(Product product) {
-        em.persist(product);
-    }
-
-    public Product findById(Long id) {
-        return em.find(Product.class, id);
-    }
-
-    public Product update(Product product) {
-        return em.merge(product);
-    }
-
-    public void delete(Long id) {
-        Product product = findById(id);
-        if (product != null) {
-            em.remove(product);
         }
     }
 

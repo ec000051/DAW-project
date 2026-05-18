@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
-                xmlns:pt="jakarta.faces.passthrough"
                 xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
 
@@ -12,8 +10,8 @@
 
     <ui:define name="title">Confirm Order</ui:define>
 
-
     <ui:define name="content">
+
         <div class="flex items-center gap-3 mb-8">
 
             <button type="button"
@@ -31,36 +29,165 @@
             </div>
 
             <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
+
                 <div class="border-b border-slate-200 pb-6 mb-6">
-                    <h2 class="text-2xl font-bold text-slate-900 mb-2">#{orderBean.selectedProduct.name}</h2>
-                    <p class="text-slate-600 mb-2">#{orderBean.selectedProduct.description}</p>
-                    <p class="text-2xl font-extrabold text-slate-900">€€#{orderBean.selectedProduct.price}</p>
+                    <h2 id="productName" class="text-2xl font-bold text-slate-900 mb-2">
+                        Loading product...
+                    </h2>
+
+                    <p id="productDescription" class="text-slate-600 mb-2"></p>
+
+                    <p id="productPrice" class="text-2xl font-extrabold text-slate-900"></p>
                 </div>
 
-                <h:form>
+                <form id="checkoutForm">
+
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-slate-700 mb-2">
                             Order note to seller
                         </label>
 
-                        <h:inputTextarea value="#{orderBean.contactMessage}"
-                                         styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 min-h-32 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                                         pt:placeholder="Example: Hello, I am the person who contacted you about this product. I would like to confirm the purchase." />
+                        <textarea id="contactMessage"
+                                  class="w-full border border-slate-300 rounded-xl px-4 py-3 min-h-32 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                  placeholder="Example: Hello, I am the person who contacted you about this product. I would like to confirm the purchase."></textarea>
                     </div>
 
                     <div class="flex gap-4">
-                        <h:commandButton value="Confirm Order"
-                                         action="#{orderBean.confirmOrder}"
-                                         styleClass="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition font-semibold" />
+                        <button type="submit"
+                                class="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition font-semibold">
+                            Confirm Order
+                        </button>
 
-                        <a href="#{request.contextPath}/products/detail.xhtml"
+                        <a id="cancelLink"
+                           href="#{request.contextPath}/products/browse.xhtml"
                            class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition">
                             Cancel
                         </a>
                     </div>
-                </h:form>
+
+                </form>
+
             </div>
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get("id") || params.get("productId");
+
+            const productName = document.getElementById("productName");
+            const productDescription = document.getElementById("productDescription");
+            const productPrice = document.getElementById("productPrice");
+            const checkoutForm = document.getElementById("checkoutForm");
+            const contactMessage = document.getElementById("contactMessage");
+            const cancelLink = document.getElementById("cancelLink");
+
+            if (productId) {
+                cancelLink.href = contextPath + "/products/detail.xhtml?id=" + productId;
+            }
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) {
+                    return "";
+                }
+
+                return String(value)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            function validateCheckoutForm() {
+                if (contactMessage.value.trim() === "") {
+                    alert("Order note cannot be empty.");
+                    contactMessage.focus();
+                    return false;
+                }
+
+                if (contactMessage.value.trim().length < 10) {
+                    alert("Order note must contain at least 10 characters.");
+                    contactMessage.focus();
+                    return false;
+                }
+
+                return true;
+            }
+
+            async function loadProduct() {
+                if (!productId) {
+                    productName.textContent = "No product selected.";
+                    productDescription.textContent = "Please go back and choose a product first.";
+                    return;
+                }
+
+                try {
+                    const response = await fetch(contextPath + "/api/products/" + productId);
+
+                    if (!response.ok) {
+                        throw new Error("Could not load product");
+                    }
+
+                    const product = await response.json();
+
+                    console.log(product);
+                    console.log(product.price);
+
+                    productName.textContent = product.name || "";
+                    productDescription.textContent = product.description || "";
+                    productPrice.textContent = "€" + product.price;
+
+                } catch (error) {
+                    console.error(error);
+                    productName.textContent = "Error loading product.";
+                    productDescription.textContent = "Please try again.";
+                }
+            }
+
+            checkoutForm.addEventListener("submit", async function (event) {
+                event.preventDefault();
+
+                if (!validateCheckoutForm()) {
+                    return;
+                }
+
+                const orderData = {
+                    productId: Number(productId),
+                    contactMessage: contactMessage.value
+                };
+
+                try {
+                    const response = await fetch(contextPath + "/api/orders", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(errorText);
+                        throw new Error(errorText);
+                    }
+
+                    window.location.href = contextPath + "/orders/purchases.xhtml";
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Error confirming order.");
+                }
+            });
+
+            loadProduct();
+
+            //]]>
+        </script>
+
     </ui:define>
 
 </ui:composition>

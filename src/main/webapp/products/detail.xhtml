@@ -1,111 +1,179 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
-                xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
-
-    <f:metadata>
-        <f:viewAction action="#{productBean.loadProductById}" />
-    </f:metadata>
 
     <ui:define name="title">Product Details</ui:define>
 
-
-
     <ui:define name="content">
-        <div class="flex items-center gap-3 mb-8">
 
+        <div class="flex items-center gap-3 mb-8">
             <button type="button"
                     onclick="history.back()"
                     class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
                 ← Back
             </button>
-
         </div>
+
+        <div id="message" class="mb-6 font-semibold"></div>
 
         <section class="grid lg:grid-cols-2 gap-10 items-start max-w-6xl mx-auto">
             <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm h-fit">
-                <div class="aspect-square bg-slate-100 flex items-center justify-center overflow-hidden">
-                    <h:graphicImage value="#{productBean.product.imageUrl}"
-                                    rendered="#{not empty productBean.product.imageUrl}"
-                                    styleClass="max-w-full max-h-full object-contain p-8" />
-
-                    <h:panelGroup rendered="#{empty productBean.product.imageUrl}"
-                                  layout="block"
-                                  styleClass="h-full flex items-center justify-center text-slate-500 text-xl">
-                        No Image
-                    </h:panelGroup>
+                <div id="productImageBox" class="aspect-square bg-slate-100 flex items-center justify-center overflow-hidden">
+                    Loading image...
                 </div>
             </div>
 
             <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
-                <span class="inline-block bg-slate-100 text-slate-700 text-sm px-3 py-1 rounded-full mb-4">
-                    #{productBean.product.category}
+                <span id="category"
+                      class="inline-block bg-slate-100 text-slate-700 text-sm px-3 py-1 rounded-full mb-4">
                 </span>
 
-                <h1 class="text-4xl font-extrabold text-slate-900 mb-4">
-                    #{productBean.product.name}
-                </h1>
+                <h1 id="productName" class="text-4xl font-extrabold text-slate-900 mb-4"></h1>
 
-                <p class="text-3xl font-extrabold text-slate-900 mb-6">
-                    €#{productBean.product.price}
-                </p>
+                <p id="productPrice" class="text-3xl font-extrabold text-slate-900 mb-6"></p>
 
-                <p class="text-slate-600 leading-relaxed mb-8">
-                    #{productBean.product.description}
-                </p>
+                <p id="productDescription" class="text-slate-600 leading-relaxed mb-8"></p>
 
                 <div class="border-t border-slate-200 pt-6 mb-8">
                     <h2 class="font-bold text-slate-900 mb-2">Seller information</h2>
-                    <p class="text-slate-600">Sold by: #{productBean.product.owner.username}</p>
-                    <p class="text-slate-600">Status: #{productBean.product.status}</p>
+                    <p id="sellerName" class="text-slate-600"></p>
+                    <p id="productStatus" class="text-slate-600"></p>
                 </div>
 
-                <div class="flex flex-wrap gap-4">
+                <div id="actionsBox" class="flex flex-wrap gap-4"></div>
+            </div>
+        </section>
 
-                    <!-- Contact / View Seller -->
-                    <h:panelGroup rendered="#{authBean.currentUser == null or authBean.currentUser.id ne productBean.product.owner.id}">
-                        <a href="#{request.contextPath}/users/profile.xhtml?id=#{productBean.product.owner.id}"
+        <script>
+            /* <![CDATA[ */
+
+            const contextPath = "#{request.contextPath}";
+            const apiUrl = contextPath + "/api/products";
+            const loggedIn = #{authBean.loggedIn};
+            const currentUserId = "#{authBean.loggedIn ? authBean.currentUser.id : ''}";
+
+            document.addEventListener("DOMContentLoaded", loadProductDetails);
+
+            async function loadProductDetails() {
+                const params = new URLSearchParams(window.location.search);
+                const productId = params.get("id");
+
+                if (!productId) {
+                    showMessage("Product ID was not provided.", "red");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(apiUrl + "/" + productId);
+
+                    if (!response.ok) {
+                        throw new Error("Product not found");
+                    }
+
+                    const product = await response.json();
+                    renderProduct(product);
+                } catch (error) {
+                    showMessage("Error loading product details.", "red");
+                    console.error(error);
+                }
+            }
+
+            function renderProduct(product) {
+                const imageBox = document.getElementById("productImageBox");
+
+                if (product.imageUrl) {
+                    imageBox.innerHTML = `
+                        <img src="\${escapeHtml(product.imageUrl)}"
+                             class="max-w-full max-h-full object-contain p-8" />
+                    `;
+                } else {
+                    imageBox.innerHTML = `
+                        <div class="h-full flex items-center justify-center text-slate-500 text-xl">
+                            No Image
+                        </div>
+                    `;
+                }
+
+                document.getElementById("category").textContent = product.category || "Uncategorized";
+                document.getElementById("productName").textContent = product.name || "";
+                document.getElementById("productPrice").textContent = "€" + (product.price || 0);
+                document.getElementById("productDescription").textContent = product.description || "";
+
+                const owner = product.owner || {};
+                document.getElementById("sellerName").textContent = "Sold by: " + (owner.username || "Unknown seller");
+                document.getElementById("productStatus").textContent = "Status: " + (product.status || "AVAILABLE");
+
+                renderActions(product);
+            }
+
+            function renderActions(product) {
+                const actionsBox = document.getElementById("actionsBox");
+                const owner = product.owner || {};
+                const isOwner = loggedIn && String(owner.id) === String(currentUserId);
+
+                let html = "";
+
+                if (!isOwner && owner.id) {
+                    html += `
+                        <a href="\${contextPath}/users/profile.xhtml?id=\${owner.id}"
                            class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition inline-block">
                             View Seller Profile
                         </a>
-                    </h:panelGroup>
+                    `;
+                }
 
-                    <!-- Guest button -->
-                    <h:panelGroup rendered="#{!authBean.loggedIn}">
-                        <a href="#{request.contextPath}/auth/login.xhtml"
+                if (!loggedIn) {
+                    html += `
+                        <a href="\${contextPath}/auth/login.xhtml"
                            class="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition inline-block">
                             Login to Order
                         </a>
-                    </h:panelGroup>
-
-                    <!-- Logged-in user button (NOT owner) -->
-                    <h:panelGroup rendered="#{authBean.loggedIn and authBean.currentUser.id ne productBean.product.owner.id}">
-                        <h:form>
-                            <h:commandButton value="Place Order"
-                                             action="#{orderBean.goToCheckout}"
-                                             styleClass="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition">
-                                <f:param name="id" value="#{productBean.product.id}" />
-                            </h:commandButton>
-                        </h:form>
-                    </h:panelGroup>
-
-                    <!-- Owner message -->
-                    <h:panelGroup rendered="#{authBean.loggedIn and authBean.currentUser.id eq productBean.product.owner.id}">
+                    `;
+                } else if (!isOwner) {
+                    html += `
+                        <a href="\${contextPath}/orders/checkout.xhtml?id=\${product.id}"
+                           class="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition inline-block">
+                            Place Order
+                        </a>
+                    `;
+                } else {
+                    html += `
                         <span class="bg-slate-100 text-slate-600 px-6 py-3 rounded-xl">
                             This is your product
                         </span>
-                    </h:panelGroup>
+                    `;
+                }
 
-                    <a href="#{request.contextPath}/products/browse.xhtml"
+                html += `
+                    <a href="\${contextPath}/products/browse.xhtml"
                        class="bg-white border border-slate-300 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-100 transition inline-block">
                         Continue Browsing
                     </a>
+                `;
 
-                </div>
-            </div>
-        </section>
+                actionsBox.innerHTML = html;
+            }
+
+            function showMessage(text, color) {
+                const message = document.getElementById("message");
+                message.textContent = text;
+                message.className = color === "green"
+                    ? "mb-6 font-semibold text-green-600"
+                    : "mb-6 font-semibold text-red-600";
+            }
+
+            function escapeHtml(value) {
+                return String(value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            /* ]]> */
+        </script>
+
     </ui:define>
-
 </ui:composition>

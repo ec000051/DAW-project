@@ -1,13 +1,8 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
-
-    <f:metadata>
-        <f:viewAction action="#{sellerProfileBean.loadSeller}" />
-    </f:metadata>
 
     <ui:define name="title">User Profile</ui:define>
 
@@ -23,8 +18,8 @@
 
         <section class="mb-8">
             <p class="text-sm uppercase tracking-widest text-slate-500 font-semibold">User Profile</p>
-            <h1 class="text-4xl font-extrabold text-slate-900 mb-3">
-                #{sellerProfileBean.seller.username}
+            <h1 id="sellerUsernameTitle" class="text-4xl font-extrabold text-slate-900 mb-3">
+                Loading seller...
             </h1>
             <p class="text-slate-600">
                 View this user's contact information and marketplace products.
@@ -33,31 +28,21 @@
 
         <section class="grid md:grid-cols-3 gap-6 mb-10">
 
-            <!-- Seller card -->
             <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8 text-center flex flex-col items-center">
 
-                <h:graphicImage value="#{sellerProfileBean.seller.profileImage}"
-                                rendered="#{not empty sellerProfileBean.seller.profileImage}"
-                                styleClass="w-28 h-28 rounded-full object-cover mb-6 ring-4 ring-slate-100" />
+                <div id="sellerAvatarContainer"
+                     class="w-28 h-28 rounded-full bg-slate-900 text-white flex items-center justify-center text-4xl font-extrabold mb-6 ring-4 ring-slate-100">
+                    ?
+                </div>
 
-                <h:panelGroup rendered="#{empty sellerProfileBean.seller.profileImage}"
-                              layout="block"
-                              styleClass="w-28 h-28 rounded-full bg-slate-900 text-white flex items-center justify-center text-4xl font-extrabold mb-6 ring-4 ring-slate-100">
-                    #{sellerProfileBean.seller.username.substring(0,1).toUpperCase()}
-                </h:panelGroup>
-
-                <h2 class="text-2xl font-extrabold text-slate-900">
-                    #{sellerProfileBean.seller.username}
+                <h2 id="sellerUsernameCard" class="text-2xl font-extrabold text-slate-900">
+                    Loading...
                 </h2>
 
-                <p class="text-slate-500 mt-2">
-                    #{sellerProfileBean.seller.email}
-                </p>
-
+                <p id="sellerEmailCard" class="text-slate-500 mt-2"></p>
 
             </div>
 
-            <!-- Contact info card -->
             <div class="md:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm p-8">
                 <h2 class="text-2xl font-extrabold text-slate-900 mb-3">Contact information</h2>
 
@@ -69,15 +54,13 @@
                 <div class="grid md:grid-cols-2 gap-4">
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
                         <p class="text-sm text-slate-500 mb-1">Email</p>
-                        <p class="font-semibold text-slate-900">
-                            #{sellerProfileBean.seller.email}
-                        </p>
+                        <p id="sellerEmailInfo" class="font-semibold text-slate-900"></p>
                     </div>
 
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
                         <p class="text-sm text-slate-500 mb-1">Contact Message</p>
-                        <p class="font-semibold text-slate-900 leading-relaxed">
-                            #{empty sellerProfileBean.seller.bio ? 'No contact information added yet.' : sellerProfileBean.seller.bio}
+                        <p id="sellerBioInfo" class="font-semibold text-slate-900 leading-relaxed">
+                            Loading...
                         </p>
                     </div>
                 </div>
@@ -93,40 +76,212 @@
                 </div>
             </div>
 
-            <div class="grid md:grid-cols-4 gap-6">
-                <ui:repeat value="#{sellerProfileBean.sellerProducts}" var="p">
-                    <a href="#{request.contextPath}/products/detail.xhtml?id=#{p.id}"
-                       class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
-
-                        <div class="h-44 bg-slate-200 overflow-hidden">
-                            <h:graphicImage value="#{p.imageUrl}"
-                                            rendered="#{not empty p.imageUrl}"
-                                            styleClass="w-full h-full object-cover" />
-
-                            <h:panelGroup rendered="#{empty p.imageUrl}"
-                                          layout="block"
-                                          styleClass="h-full flex items-center justify-center text-slate-500">
-                                No Image
-                            </h:panelGroup>
-                        </div>
-
-                        <div class="p-5">
-                            <h3 class="font-bold text-lg text-slate-900">#{p.name}</h3>
-                            <p class="text-slate-500 text-sm mb-3">#{p.description}</p>
-                            <p class="font-extrabold text-slate-900">€#{p.price}</p>
-
-                            <span class="inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold
-                                #{p.status eq 'AVAILABLE' ? 'bg-green-100 text-green-700' : ''}
-                                #{p.status eq 'RESERVED' ? 'bg-yellow-100 text-yellow-800' : ''}
-                                #{p.status eq 'SOLD' ? 'bg-red-100 text-red-700' : ''}
-                                #{p.status eq 'UNAVAILABLE' ? 'bg-slate-100 text-slate-700' : ''}">
-                                #{p.status}
-                            </span>
-                        </div>
-                    </a>
-                </ui:repeat>
+            <div id="sellerProductsGrid" class="grid md:grid-cols-4 gap-6">
+                <div class="md:col-span-4 bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-500">
+                    Loading products...
+                </div>
             </div>
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+            const params = new URLSearchParams(window.location.search);
+            const sellerId = params.get("id") || params.get("userId") || params.get("sellerId");
+
+            const sellerUsernameTitle = document.getElementById("sellerUsernameTitle");
+            const sellerUsernameCard = document.getElementById("sellerUsernameCard");
+            const sellerEmailCard = document.getElementById("sellerEmailCard");
+            const sellerEmailInfo = document.getElementById("sellerEmailInfo");
+            const sellerBioInfo = document.getElementById("sellerBioInfo");
+            const sellerAvatarContainer = document.getElementById("sellerAvatarContainer");
+            const sellerProductsGrid = document.getElementById("sellerProductsGrid");
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) {
+                    return "";
+                }
+
+                return String(value)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            function getStatusClass(status) {
+                if (status === "AVAILABLE") {
+                    return "bg-green-100 text-green-700";
+                }
+
+                if (status === "RESERVED") {
+                    return "bg-yellow-100 text-yellow-800";
+                }
+
+                if (status === "SOLD") {
+                    return "bg-red-100 text-red-700";
+                }
+
+                if (status === "UNAVAILABLE") {
+                    return "bg-slate-100 text-slate-700";
+                }
+
+                return "bg-slate-100 text-slate-700";
+            }
+
+            function getOwnerId(product) {
+                if (product.ownerId !== undefined && product.ownerId !== null) {
+                    return Number(product.ownerId);
+                }
+
+                if (product.owner && product.owner.id !== undefined && product.owner.id !== null) {
+                    return Number(product.owner.id);
+                }
+
+                return null;
+            }
+
+            function renderSellerAvatar(seller) {
+                if (seller.profileImage && seller.profileImage.trim() !== "") {
+                    sellerAvatarContainer.className = "w-28 h-28 rounded-full overflow-hidden mb-6 ring-4 ring-slate-100";
+                    sellerAvatarContainer.innerHTML =
+                        '<img src="' + escapeHtml(seller.profileImage) + '" alt="Seller profile image" class="w-full h-full object-cover" />';
+                    return;
+                }
+
+                sellerAvatarContainer.className =
+                    "w-28 h-28 rounded-full bg-slate-900 text-white flex items-center justify-center text-4xl font-extrabold mb-6 ring-4 ring-slate-100";
+
+                sellerAvatarContainer.textContent =
+                    seller.username ? seller.username.substring(0, 1).toUpperCase() : "?";
+            }
+
+            function renderProductImage(product) {
+                if (product.imageUrl && product.imageUrl.trim() !== "") {
+                    return '<img src="' + escapeHtml(product.imageUrl) + '" alt="Product image" class="w-full h-full object-cover" />';
+                }
+
+                return '<div class="h-full flex items-center justify-center text-slate-500">No Image</div>';
+            }
+
+            async function loadSeller() {
+                if (!sellerId) {
+                    sellerUsernameTitle.textContent = "No seller selected.";
+                    sellerUsernameCard.textContent = "No seller selected.";
+                    sellerBioInfo.textContent = "Please open this profile from a product page.";
+                    sellerProductsGrid.innerHTML =
+                        '<div class="md:col-span-4 bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-500">' +
+                        'No seller selected.' +
+                        '</div>';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(contextPath + "/api/users/" + sellerId);
+
+                    if (!response.ok) {
+                        throw new Error("Could not load seller profile");
+                    }
+
+                    const seller = await response.json();
+
+                    sellerUsernameTitle.textContent = seller.username || "";
+                    sellerUsernameCard.textContent = seller.username || "";
+                    sellerEmailCard.textContent = seller.email || "";
+                    sellerEmailInfo.textContent = seller.email || "";
+                    sellerBioInfo.textContent =
+                        seller.bio && seller.bio.trim() !== ""
+                            ? seller.bio
+                            : "No contact information added yet.";
+
+                    renderSellerAvatar(seller);
+
+                    await loadSellerProducts();
+
+                } catch (error) {
+                    console.error(error);
+
+                    sellerUsernameTitle.textContent = "Error loading seller.";
+                    sellerUsernameCard.textContent = "Error loading seller.";
+                    sellerBioInfo.textContent = "Please try again.";
+
+                    sellerProductsGrid.innerHTML =
+                        '<div class="md:col-span-4 bg-white border border-slate-200 rounded-2xl p-8 text-center text-red-500">' +
+                        'Error loading seller profile.' +
+                        '</div>';
+                }
+            }
+
+            async function loadSellerProducts() {
+                try {
+                    const response = await fetch(contextPath + "/api/products");
+
+                    if (!response.ok) {
+                        throw new Error("Could not load products");
+                    }
+
+                    const products = await response.json();
+
+                    const sellerProducts = products.filter(function (product) {
+                        return getOwnerId(product) === Number(sellerId);
+                    });
+
+                    if (sellerProducts.length === 0) {
+                        sellerProductsGrid.innerHTML =
+                            '<div class="md:col-span-4 bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-500">' +
+                            'This user has no products yet.' +
+                            '</div>';
+                        return;
+                    }
+
+                    sellerProductsGrid.innerHTML = sellerProducts.map(function (product) {
+                        return '<a href="' + contextPath + '/products/detail.xhtml?id=' + product.id + '"' +
+                            ' class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">' +
+
+                            '<div class="h-44 bg-slate-200 overflow-hidden">' +
+                            renderProductImage(product) +
+                            '</div>' +
+
+                            '<div class="p-5">' +
+                            '<h3 class="font-bold text-lg text-slate-900">' +
+                            escapeHtml(product.name) +
+                            '</h3>' +
+
+                            '<p class="text-slate-500 text-sm mb-3">' +
+                            escapeHtml(product.description) +
+                            '</p>' +
+
+                            '<p class="font-extrabold text-slate-900">€' +
+                            escapeHtml(product.price) +
+                            '</p>' +
+
+                            '<span class="inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold ' +
+                            getStatusClass(product.status) +
+                            '">' +
+                            escapeHtml(product.status) +
+                            '</span>' +
+
+                            '</div>' +
+                            '</a>';
+                    }).join("");
+
+                } catch (error) {
+                    console.error(error);
+
+                    sellerProductsGrid.innerHTML =
+                        '<div class="md:col-span-4 bg-white border border-slate-200 rounded-2xl p-8 text-center text-red-500">' +
+                        'Error loading seller products.' +
+                        '</div>';
+                }
+            }
+
+            loadSeller();
+
+            //]]>
+
+        </script>
 
     </ui:define>
 

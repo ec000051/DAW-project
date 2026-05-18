@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
                 xmlns:f="jakarta.faces.core"
                 template="/templates/main.xhtml">
 
@@ -14,13 +13,11 @@
     <ui:define name="content">
 
         <div class="flex items-center gap-3 mb-8">
-
             <button type="button"
                     onclick="history.back()"
                     class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-800 px-5 py-3 rounded-xl hover:bg-slate-100 transition">
                 ← Back
             </button>
-
         </div>
 
         <div class="space-y-8">
@@ -37,18 +34,17 @@
                         View Orders Received
                     </a>
 
-                    <h:form>
-                        <h:commandLink value="Add New Product"
-                                       action="#{productBean.prepareCreate}"
-                                       styleClass="inline-block bg-slate-900 text-white px-5 py-3 rounded-xl hover:bg-slate-800 transition shadow-sm" />
-                    </h:form>
+                    <a href="#{request.contextPath}/products/create.xhtml"
+                       class="inline-block bg-slate-900 text-white px-5 py-3 rounded-xl hover:bg-slate-800 transition shadow-sm">
+                        Add New Product
+                    </a>
                 </div>
             </div>
 
             <div class="grid md:grid-cols-3 gap-4">
                 <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
                     <p class="text-sm text-slate-500 mb-1">Total products</p>
-                    <h2 class="text-3xl font-bold">#{productBean.products.size()}</h2>
+                    <h2 id="totalProductsCount" class="text-3xl font-bold">0</h2>
                 </div>
 
                 <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
@@ -80,53 +76,171 @@
                         </tr>
                         </thead>
 
-                        <tbody>
-                        <ui:repeat value="#{productBean.products}" var="p">
-                            <tr class="border-t border-slate-200 hover:bg-slate-50 transition">
-                                <td class="px-6 py-4 text-slate-500">#{p.id}</td>
-                                <td class="px-6 py-4">
-                                    <div class="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
-                                        <h:graphicImage value="#{p.imageUrl}"
-                                                        rendered="#{not empty p.imageUrl}"
-                                                        styleClass="w-full h-full object-cover" />
-
-                                        <h:panelGroup rendered="#{empty p.imageUrl}"
-                                                      layout="block"
-                                                      styleClass="text-xs text-slate-400 text-center px-2">
-                                            No image
-                                        </h:panelGroup>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div>
-                                        <p class="font-semibold text-slate-900">#{p.name}</p>
-                                        <p class="text-sm text-slate-500">Marketplace item</p>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 font-semibold text-slate-900">€#{p.price}</td>
-                                <td class="px-6 py-4 text-slate-600">#{p.description}</td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <h:form styleClass="inline">
-                                            <h:commandLink value="Edit"
-                                                           action="#{productBean.prepareEdit(p.id)}"
-                                                           styleClass="text-blue-600 hover:underline font-medium" />
-                                        </h:form>
-
-                                        <h:form styleClass="inline">
-                                            <h:commandLink value="Delete"
-                                                           action="#{productBean.delete(p.id)}"
-                                                           styleClass="text-red-500 hover:underline font-medium" />
-                                        </h:form>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ui:repeat>
+                        <tbody id="productsTableBody">
+                        <tr>
+                            <td colspan="6" class="px-6 py-8 text-center text-slate-500">
+                                Loading products...
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+        <script type="text/javascript">
+            //<![CDATA[
+
+            const contextPath = "#{request.contextPath}";
+            const currentUserId = Number("#{authBean.currentUser.id}");
+
+            const tableBody = document.getElementById("productsTableBody");
+            const totalProductsCount = document.getElementById("totalProductsCount");
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) {
+                    return "";
+                }
+
+                return String(value)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
+            }
+
+            function getOwnerId(product) {
+                if (product.ownerId !== undefined && product.ownerId !== null) {
+                    return Number(product.ownerId);
+                }
+
+                if (product.owner && product.owner.id !== undefined && product.owner.id !== null) {
+                    return Number(product.owner.id);
+                }
+
+                return null;
+            }
+
+            function imageHtml(product) {
+                if (product.imageUrl && product.imageUrl.trim() !== "") {
+                    return '<img src="' + escapeHtml(product.imageUrl) + '" alt="Product image" class="w-full h-full object-cover" />';
+                }
+
+                return '<div class="text-xs text-slate-400 text-center px-2">No image</div>';
+            }
+
+            async function loadProducts() {
+                try {
+                    const response = await fetch(contextPath + "/api/products");
+
+                    if (!response.ok) {
+                        throw new Error("Could not load products");
+                    }
+
+                    let products = await response.json();
+
+                    products = products.filter(function (product) {
+                        const ownerId = getOwnerId(product);
+
+                        if (ownerId === null) {
+                            return true;
+                        }
+
+                        return ownerId === currentUserId;
+                    });
+
+                    totalProductsCount.textContent = products.length;
+
+                    if (products.length === 0) {
+                        tableBody.innerHTML =
+                            '<tr>' +
+                            '<td colspan="6" class="px-6 py-8 text-center text-slate-500">' +
+                            'You have not added any products yet.' +
+                            '</td>' +
+                            '</tr>';
+                        return;
+                    }
+
+                    tableBody.innerHTML = products.map(function (product) {
+                        return '<tr class="border-t border-slate-200 hover:bg-slate-50 transition">' +
+
+                            '<td class="px-6 py-4 text-slate-500">' +
+                            escapeHtml(product.id) +
+                            '</td>' +
+
+                            '<td class="px-6 py-4">' +
+                            '<div class="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">' +
+                            imageHtml(product) +
+                            '</div>' +
+                            '</td>' +
+
+                            '<td class="px-6 py-4">' +
+                            '<div>' +
+                            '<p class="font-semibold text-slate-900">' +
+                            escapeHtml(product.name) +
+                            '</p>' +
+                            '<p class="text-sm text-slate-500">Marketplace item</p>' +
+                            '</div>' +
+                            '</td>' +
+
+                            '<td class="px-6 py-4 font-semibold text-slate-900">€' +
+                            escapeHtml(product.price) +
+                            '</td>' +
+
+                            '<td class="px-6 py-4 text-slate-600">' +
+                            escapeHtml(product.description) +
+                            '</td>' +
+
+                            '<td class="px-6 py-4">' +
+                            '<div class="flex items-center gap-3">' +
+                            '<a href="' + contextPath + '/products/edit.xhtml?id=' + product.id + '" class="text-blue-600 hover:underline font-medium">Edit</a>' +
+                            '<button type="button" onclick="deleteProduct(' + product.id + ')" class="text-red-500 hover:underline font-medium">Delete</button>' +
+                            '</div>' +
+                            '</td>' +
+
+                            '</tr>';
+                    }).join("");
+
+                } catch (error) {
+                    console.error(error);
+
+                    tableBody.innerHTML =
+                        '<tr>' +
+                        '<td colspan="6" class="px-6 py-8 text-center text-red-500">' +
+                        'Error loading products.' +
+                        '</td>' +
+                        '</tr>';
+                }
+            }
+
+            async function deleteProduct(id) {
+                if (!confirm("Are you sure you want to delete this product?")) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(contextPath + "/api/products/" + id, {
+                        method: "DELETE"
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Could not delete product");
+                    }
+
+                    await loadProducts();
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Could not delete product.");
+                }
+            }
+
+            loadProducts();
+
+            //]]>
+        </script>
+
     </ui:define>
 
 </ui:composition>

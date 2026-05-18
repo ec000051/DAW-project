@@ -20,7 +20,7 @@
                     </p>
                 </div>
 
-                <h:form>
+                <h:form onsubmit="return validateLoginForm()">
 
                     <h:messages globalOnly="true"
                                 styleClass="text-red-500 text-sm mb-4 block" />
@@ -74,6 +74,30 @@
 
             </div>
         </section>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function validateLoginForm() {
+                const username = document.querySelector('[id$="username"]');
+                const password = document.querySelector('[id$="password"]');
+
+                if (username.value.trim() === "") {
+                    alert("Username cannot be empty.");
+                    username.focus();
+                    return false;
+                }
+
+                if (password.value.length < 6) {
+                    alert("Password must contain at least 6 characters.");
+                    password.focus();
+                    return false;
+                }
+
+                return true;
+            }
+            //]]>
+        </script>
+
     </ui:define>
 
 </ui:composition>

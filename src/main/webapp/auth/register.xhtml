@@ -21,7 +21,7 @@
                     </p>
                 </div>
 
-                <h:form>
+                <h:form onsubmit="return validateRegisterForm()">
 
                     <h:messages globalOnly="true"
                                 styleClass="text-red-500 text-sm mb-4 block" />
@@ -37,13 +37,7 @@
                                      requiredMessage="Username is required."
                                      styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
                                      pt:placeholder="Choose a username">
-                            <f:validateLength minimum="3"
-                                              maximum="30" />
-
-                            <h:message for="username"
-                                       styleClass="text-red-500 text-sm mt-2 block"
-                                       showSummary="false"
-                                       showDetail="true" />
+                            <f:validateLength minimum="3" maximum="30" />
                         </h:inputText>
 
                         <h:message for="username"
@@ -62,9 +56,7 @@
                                      validatorMessage="Please enter a valid email address."
                                      styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
                                      pt:placeholder="Enter your email">
-
                             <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$" />
-
                         </h:inputText>
 
                         <h:message for="email"
@@ -83,9 +75,7 @@
                                        validatorMessage="Password must be at least 6 characters."
                                        styleClass="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900"
                                        pt:placeholder="Create password">
-
                             <f:validateLength minimum="6" />
-
                         </h:inputSecret>
 
                         <h:message for="password"
@@ -108,6 +98,38 @@
 
             </div>
         </section>
+
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function validateRegisterForm() {
+                const username = document.querySelector('[id$="username"]');
+                const email = document.querySelector('[id$="email"]');
+                const password = document.querySelector('[id$="password"]');
+
+                if (username.value.trim().length < 3) {
+                    alert("Username must contain at least 3 characters.");
+                    username.focus();
+                    return false;
+                }
+
+                if (!email.value.includes("@")) {
+                    alert("Please enter a valid email address.");
+                    email.focus();
+                    return false;
+                }
+
+                if (password.value.length < 6) {
+                    alert("Password must contain at least 6 characters.");
+                    password.focus();
+                    return false;
+                }
+
+                return true;
+            }
+            //]]>
+        </script>
+
     </ui:define>
 
 </ui:composition>
